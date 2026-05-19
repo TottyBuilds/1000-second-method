@@ -1,0 +1,23 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+
+# Editor / IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs and tmp
+*.log
+tmp/
+.tmp/
+
+# Local installer testing artifacts (operators should NEVER commit these from their own installs)
+1000-second-system/
+.installed-version
+.update-log.md
+.friday-staged.md
