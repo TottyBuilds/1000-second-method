@@ -1,0 +1,1532 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Today's 1000 Seconds</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Outfit:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d1413;
+    --panel: #111a19;
+    --panel-soft: #1a2521;
+    --border: #26342f;
+    --border-strong: #3a5246;
+    --text: #f2d8a8;
+    --text-soft: #c8b88f;
+    --muted: #809076;
+    --muted-dim: #6b7a64;
+    --accent: #e8954a;
+    --accent-soft: #ad6e36;
+    --accent-deep: #c47a35;
+    --star: #d9b66c;
+    --physical: #9bb86f;
+    --mental: #74a8c8;
+    --emotional: #c876a8;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-weight: 400;
+    line-height: 1.55;
+    font-size: 15px;
+    min-height: 100vh;
+    padding: 32px 24px 80px;
+  }
+  .container { max-width: 880px; margin: 0 auto; }
+
+  /* TABS */
+  .tabs {
+    display: flex;
+    gap: 4px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 32px;
+  }
+  .tab {
+    background: transparent;
+    color: var(--muted);
+    border: none;
+    font-family: inherit;
+    font-size: 12px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    font-weight: 500;
+    padding: 12px 16px;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    transition: color 0.12s, border-color 0.12s;
+  }
+  .tab:hover { color: var(--text-soft); }
+  .tab.active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+  }
+  .view { display: none; }
+  .view.active { display: block; }
+
+  /* META + TITLE */
+  .meta {
+    color: var(--muted);
+    font-size: 12px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  h1 {
+    font-family: 'DM Serif Display', 'Times New Roman', serif;
+    font-weight: 400;
+    color: var(--text);
+    font-size: clamp(34px, 5vw, 48px);
+    line-height: 1.05;
+    margin: 0 0 14px;
+  }
+  .lede {
+    color: var(--text-soft);
+    font-size: clamp(15px, 2vw, 17px);
+    line-height: 1.55;
+    margin: 0 0 36px;
+    max-width: 640px;
+  }
+  .lede .term { color: var(--accent); font-weight: 500; }
+
+  /* CONNECTED SOURCES PANEL */
+  .sources-panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px 24px;
+    margin-bottom: 44px;
+    transition: padding 0.18s;
+  }
+  .sources-panel.expanded {
+    padding: 20px 24px 22px;
+  }
+  .sources-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    cursor: pointer;
+    user-select: none;
+  }
+  .sources-panel.expanded .sources-head {
+    margin-bottom: 16px;
+  }
+  .sources-head-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .sources-title {
+    color: var(--muted);
+    font-size: 11px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+  .sources-summary {
+    color: var(--text-soft);
+    font-size: 12px;
+    letter-spacing: 0.02em;
+  }
+  .sources-summary .summary-dots {
+    display: inline-flex;
+    gap: 4px;
+    margin-right: 8px;
+    vertical-align: middle;
+  }
+  .sources-summary .summary-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--physical);
+  }
+  .sources-summary .summary-dot.stale { background: var(--accent); }
+  .sources-summary .summary-dot.error { background: #c87676; }
+  .sources-chevron {
+    color: var(--muted);
+    font-size: 12px;
+    transition: transform 0.18s;
+  }
+  .sources-panel.expanded .sources-chevron {
+    transform: rotate(180deg);
+  }
+  .sources-body {
+    display: none;
+  }
+  .sources-panel.expanded .sources-body {
+    display: block;
+  }
+  .sources-meta {
+    color: var(--muted-dim);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+  }
+  .source-row {
+    display: grid;
+    grid-template-columns: 14px 160px 1fr;
+    gap: 12px;
+    align-items: baseline;
+    padding: 7px 0;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  @media (max-width: 640px) {
+    .source-row { grid-template-columns: 14px 1fr; }
+    .source-row .source-contribution { grid-column: 2; padding-top: 2px; }
+  }
+  .source-status {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--physical);
+    box-shadow: 0 0 6px rgba(155, 184, 111, 0.4);
+    align-self: center;
+  }
+  .source-status.stale { background: var(--accent); box-shadow: 0 0 6px rgba(232, 149, 74, 0.4); }
+  .source-status.error { background: #c87676; box-shadow: 0 0 6px rgba(200, 118, 118, 0.4); }
+  .source-name {
+    color: var(--text);
+    font-weight: 500;
+  }
+  .source-contribution {
+    color: var(--text-soft);
+  }
+  .source-contribution .feeds {
+    color: var(--muted-dim);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    margin-left: 8px;
+  }
+  .sources-action {
+    display: inline-block;
+    margin-top: 12px;
+    color: var(--accent);
+    font-size: 12px;
+    text-decoration: none;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+  }
+  .sources-action:hover { color: var(--accent-deep); }
+  .sources-action code {
+    font-family: 'SF Mono', Menlo, Consolas, monospace;
+    background: rgba(232, 149, 74, 0.1);
+    padding: 1px 5px;
+    border-radius: 3px;
+  }
+
+  /* HERO CARD -- the one thing */
+  .hero {
+    background: var(--panel);
+    border: 1px solid var(--border-strong);
+    border-radius: 16px;
+    padding: 28px;
+    margin-bottom: 44px;
+    position: relative;
+    transition: padding 0.2s;
+  }
+  .hero-eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 11px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 500;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+  }
+  .hero-eyebrow .dot {
+    width: 6px;
+    height: 6px;
+    background: var(--accent);
+    border-radius: 50%;
+  }
+  .pillar-tag {
+    background: rgba(232, 149, 74, 0.14);
+    color: var(--accent);
+    border: 1px solid rgba(232, 149, 74, 0.36);
+    padding: 3px 8px;
+    border-radius: 3px;
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    line-height: 1;
+  }
+  .hero-title {
+    font-family: 'DM Serif Display', serif;
+    color: var(--text);
+    font-size: clamp(24px, 3.5vw, 32px);
+    line-height: 1.2;
+    margin: 0 0 14px;
+  }
+  .hero-why {
+    color: var(--text-soft);
+    font-size: 15px;
+    line-height: 1.55;
+    margin: 0 0 24px;
+    max-width: 580px;
+  }
+  .hero-why .highlight {
+    color: var(--accent);
+    font-weight: 500;
+  }
+  .hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+  }
+
+  /* TIMER MODE -- hero transforms when timer is running */
+  .hero.timer-active {
+    text-align: center;
+    padding: 44px 28px;
+  }
+  .hero.timer-active .hero-default-state { display: none; }
+  .hero-timer-state { display: none; }
+  .hero.timer-active .hero-timer-state { display: block; }
+  .timer-display {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(72px, 12vw, 120px);
+    line-height: 1;
+    color: var(--text);
+    margin: 0 0 14px;
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+  }
+  .timer-label {
+    color: var(--muted);
+    font-size: 12px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    margin: 0 0 8px;
+  }
+  .timer-target {
+    color: var(--text-soft);
+    font-size: 16px;
+    margin: 0 0 28px;
+  }
+  .timer-actions {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+  }
+  .timer-done-banner {
+    display: none;
+    background: rgba(155, 184, 111, 0.14);
+    border: 1px solid rgba(155, 184, 111, 0.4);
+    color: var(--physical);
+    padding: 14px 20px;
+    border-radius: 12px;
+    margin-top: 20px;
+    font-size: 14px;
+  }
+  .timer-done-banner.show { display: block; }
+
+  /* BUTTONS */
+  .btn {
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 12px 22px;
+    border-radius: 999px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: background 0.12s, color 0.12s, border-color 0.12s;
+    letter-spacing: 0.01em;
+  }
+  .btn-primary {
+    background: var(--accent);
+    color: #111a19;
+    border-color: var(--accent);
+  }
+  .btn-primary:hover { background: var(--accent-deep); border-color: var(--accent-deep); }
+  .btn-secondary {
+    background: transparent;
+    color: var(--text-soft);
+    border-color: var(--border-strong);
+  }
+  .btn-secondary:hover { color: var(--text); border-color: var(--muted); }
+  .btn-danger {
+    background: transparent;
+    color: var(--muted);
+    border-color: var(--border-strong);
+  }
+  .btn-danger:hover { color: var(--text-soft); border-color: var(--muted); }
+
+  /* SECTIONS */
+  .section { margin-bottom: 40px; }
+  .section-head { margin-bottom: 18px; }
+  .section-eyebrow {
+    color: var(--accent);
+    font-size: 11px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    font-weight: 500;
+    margin: 0 0 6px;
+  }
+  .section-title {
+    font-family: 'DM Serif Display', serif;
+    color: var(--text);
+    font-size: 22px;
+    line-height: 1.25;
+    margin: 0 0 6px;
+    font-weight: 400;
+  }
+  .section-prose {
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.55;
+    margin: 0;
+    max-width: 580px;
+  }
+  .section-prose em { color: var(--text-soft); font-style: italic; }
+
+  /* LIST ITEMS -- today + deferred */
+  .item-row {
+    display: grid;
+    grid-template-columns: 22px 1fr auto;
+    gap: 0 14px;
+    align-items: center;
+    padding: 18px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .item-row:last-child { border-bottom: none; }
+  .item-check {
+    width: 18px;
+    height: 18px;
+    border: 1.5px solid var(--border-strong);
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    transition: background 0.12s, border-color 0.12s;
+    color: transparent;
+    font-size: 13px;
+    line-height: 1;
+    padding: 0;
+    flex-shrink: 0;
+  }
+  .item-check:hover { border-color: var(--accent); }
+  .item-check.checked {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #111a19;
+  }
+  .item-row.done .item-title,
+  .item-row.done .item-why {
+    color: var(--muted-dim);
+    text-decoration: line-through;
+    text-decoration-color: var(--muted-dim);
+    text-decoration-thickness: 1px;
+  }
+  .item-row-body { min-width: 0; }
+  .item-row-meta {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 6px;
+    flex-wrap: wrap;
+  }
+  .pillar-pill {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 3px;
+    background: rgba(128, 144, 118, 0.14);
+    color: var(--muted);
+    border: 1px solid rgba(128, 144, 118, 0.32);
+    line-height: 1;
+  }
+  .pillar-pill.physical { background: rgba(155, 184, 111, 0.14); color: var(--physical); border-color: rgba(155, 184, 111, 0.32); }
+  .pillar-pill.mental { background: rgba(116, 168, 200, 0.14); color: var(--mental); border-color: rgba(116, 168, 200, 0.32); }
+  .pillar-pill.emotional { background: rgba(200, 118, 168, 0.14); color: var(--emotional); border-color: rgba(200, 118, 168, 0.32); }
+  .deferred-since {
+    font-size: 11px;
+    color: var(--muted-dim);
+    letter-spacing: 0.06em;
+  }
+  .item-title {
+    font-size: 16px;
+    color: var(--text);
+    line-height: 1.35;
+    margin: 0 0 4px;
+    font-weight: 500;
+  }
+  .item-why {
+    color: var(--text-soft);
+    font-size: 13px;
+    line-height: 1.45;
+    margin: 0;
+  }
+  .item-promote {
+    background: transparent;
+    color: var(--accent);
+    border: 1px solid rgba(232, 149, 74, 0.42);
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 8px 14px;
+    border-radius: 999px;
+    cursor: pointer;
+    white-space: nowrap;
+    letter-spacing: 0.02em;
+    transition: background 0.12s, color 0.12s, border-color 0.12s;
+  }
+  .item-promote:hover {
+    background: var(--accent);
+    color: #111a19;
+    border-color: var(--accent);
+  }
+
+  /* FILTERED OUT */
+  .filtered { padding: 18px 0; }
+  .filtered-item {
+    color: var(--muted-dim);
+    font-size: 13px;
+    margin: 0 0 8px;
+    text-decoration: line-through;
+    text-decoration-color: var(--border-strong);
+    text-decoration-thickness: 1px;
+  }
+  .filtered-item:last-child { margin-bottom: 0; }
+  .filtered-item .reason {
+    color: var(--muted-dim);
+    text-decoration: none;
+    font-style: italic;
+    margin-left: 8px;
+    font-size: 12px;
+  }
+
+  /* FOOTER */
+  .footer {
+    margin-top: 48px;
+    padding-top: 28px;
+    border-top: 1px solid var(--border-strong);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px 32px;
+    align-items: baseline;
+  }
+  @media (max-width: 640px) { .footer { grid-template-columns: 1fr; } }
+  .footer-label {
+    color: var(--muted);
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+  }
+  .footer-value { color: var(--text); font-size: 14px; }
+  .footer-value .warn { color: var(--accent); }
+
+  /* THE LOOP (weekly bridge surface) */
+  .loop {
+    margin-top: 48px;
+    padding: 24px 28px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+  }
+  .loop-eyebrow {
+    color: var(--muted);
+    font-size: 11px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    font-weight: 500;
+    margin: 0 0 6px;
+  }
+  .loop-title {
+    font-family: 'DM Serif Display', serif;
+    color: var(--text);
+    font-size: 22px;
+    line-height: 1.2;
+    margin: 0 0 18px;
+    font-weight: 400;
+  }
+  .loop-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px 24px;
+  }
+  @media (max-width: 640px) { .loop-grid { grid-template-columns: 1fr; } }
+  .loop-item {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 12px;
+    align-items: start;
+    padding: 10px 0;
+  }
+  .loop-when {
+    color: var(--accent);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    font-weight: 500;
+    min-width: 88px;
+    padding-top: 1px;
+  }
+  .loop-when.muted { color: var(--muted); }
+  .loop-cmd {
+    color: var(--text);
+    font-family: 'SF Mono', Menlo, Consolas, monospace;
+    font-size: 13px;
+    background: rgba(232, 149, 74, 0.1);
+    padding: 1px 6px;
+    border-radius: 4px;
+    margin-right: 4px;
+  }
+  .loop-what {
+    color: var(--text-soft);
+    font-size: 13px;
+    line-height: 1.45;
+    margin: 0;
+  }
+  .loop-what strong { color: var(--text); font-weight: 500; }
+
+  /* INSTALL CTA */
+  .install-cta {
+    margin-top: 32px;
+    padding: 28px;
+    background: var(--panel);
+    border: 1px solid var(--border-strong);
+    border-radius: 16px;
+  }
+  .install-cta-eyebrow {
+    color: var(--accent);
+    font-size: 11px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    font-weight: 500;
+    margin: 0 0 8px;
+  }
+  .install-cta-title {
+    font-family: 'DM Serif Display', serif;
+    color: var(--text);
+    font-size: clamp(22px, 3vw, 28px);
+    line-height: 1.2;
+    margin: 0 0 12px;
+  }
+  .install-cta-prose {
+    color: var(--text-soft);
+    font-size: 14px;
+    line-height: 1.55;
+    margin: 0 0 20px;
+    max-width: 540px;
+  }
+
+  /* ============================================================
+     DONE VIEW -- historical accomplishments
+     ============================================================ */
+
+  .done-strip {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 36px;
+  }
+  @media (max-width: 640px) { .done-strip { grid-template-columns: 1fr; } }
+  .stat-card {
+    background: var(--panel);
+    border: 1px solid var(--border-strong);
+    border-radius: 14px;
+    padding: 20px;
+  }
+  .stat-label {
+    color: var(--muted);
+    font-size: 10px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    font-weight: 500;
+    margin: 0 0 10px;
+  }
+  .stat-value {
+    font-family: 'DM Serif Display', serif;
+    color: var(--text);
+    font-size: 36px;
+    line-height: 1;
+    margin: 0 0 6px;
+  }
+  .stat-sub {
+    color: var(--text-soft);
+    font-size: 12px;
+    line-height: 1.4;
+    margin: 0;
+  }
+  .stat-sub .accent { color: var(--accent); }
+
+  /* Pillar breakdown */
+  .pillar-bar {
+    display: flex;
+    height: 8px;
+    border-radius: 4px;
+    overflow: hidden;
+    margin: 12px 0 8px;
+    background: var(--border);
+  }
+  .pillar-bar .seg { height: 100%; }
+  .pillar-bar .seg.physical { background: var(--physical); }
+  .pillar-bar .seg.mental { background: var(--mental); }
+  .pillar-bar .seg.emotional { background: var(--emotional); }
+  .pillar-legend {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    font-size: 11px;
+    color: var(--text-soft);
+    margin-top: 8px;
+  }
+  .pillar-legend .key { display: flex; align-items: center; gap: 6px; }
+  .pillar-legend .swatch { width: 8px; height: 8px; border-radius: 2px; }
+  .pillar-legend .swatch.physical { background: var(--physical); }
+  .pillar-legend .swatch.mental { background: var(--mental); }
+  .pillar-legend .swatch.emotional { background: var(--emotional); }
+
+  /* Weekly calendar grid */
+  .weeks {
+    background: var(--panel);
+    border: 1px solid var(--border-strong);
+    border-radius: 14px;
+    padding: 22px;
+    margin-bottom: 36px;
+  }
+  .weeks-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 18px;
+  }
+  .weeks-title {
+    font-family: 'DM Serif Display', serif;
+    color: var(--text);
+    font-size: 18px;
+    margin: 0;
+  }
+  .weeks-sub {
+    color: var(--muted);
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+  }
+  .week-grid {
+    display: grid;
+    grid-template-columns: 60px repeat(7, 1fr);
+    gap: 6px;
+  }
+  .week-label {
+    color: var(--muted);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    align-self: center;
+  }
+  .day-head {
+    color: var(--muted-dim);
+    font-size: 10px;
+    text-align: center;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    padding: 4px 0 8px;
+  }
+  .day {
+    aspect-ratio: 1;
+    border-radius: 6px;
+    background: var(--panel-soft);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    color: var(--muted-dim);
+    position: relative;
+  }
+  .day.future { opacity: 0.3; }
+  .day.physical { background: rgba(155, 184, 111, 0.22); border-color: rgba(155, 184, 111, 0.4); color: var(--physical); }
+  .day.mental { background: rgba(116, 168, 200, 0.22); border-color: rgba(116, 168, 200, 0.4); color: var(--mental); }
+  .day.emotional { background: rgba(200, 118, 168, 0.22); border-color: rgba(200, 118, 168, 0.4); color: var(--emotional); }
+  .day.today { box-shadow: 0 0 0 2px var(--accent); }
+
+  /* Timeline */
+  .timeline { margin-bottom: 24px; }
+  .timeline-day {
+    padding: 18px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .timeline-day:last-child { border-bottom: none; }
+  .timeline-meta {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 6px;
+    color: var(--muted);
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    flex-wrap: wrap;
+  }
+  .timeline-title { color: var(--text); font-size: 15px; font-weight: 500; margin: 0 0 4px; }
+  .timeline-detail { color: var(--text-soft); font-size: 13px; margin: 0; }
+
+  /* Toast */
+  #toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--accent);
+    color: #111a19;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 10px 18px;
+    border-radius: 999px;
+    opacity: 0;
+    transition: opacity 0.18s, transform 0.18s;
+    pointer-events: none;
+    letter-spacing: 0.02em;
+    z-index: 10;
+    max-width: 90vw;
+    text-align: center;
+  }
+  #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab active" data-view="today">Today</button>
+    <button class="tab" data-view="done">Log</button>
+  </div>
+
+  <!-- =================== TODAY VIEW =================== -->
+  <div class="view active" data-view="today">
+
+    <!-- META + H1 -->
+    <div class="meta" id="meta-line"></div>
+    <h1>One thing today. 1000 seconds.</h1>
+    <p class="lede">
+      Tonight's 1000, what else is on your radar, and what you've been putting off. Check off whatever you finish.
+    </p>
+
+    <!-- HERO -->
+    <div class="hero" id="hero">
+      <!-- Default state -->
+      <div class="hero-default-state">
+        <div class="hero-eyebrow">
+          <span class="dot"></span>
+          Tonight's 1000 seconds · what the system is suggesting
+          <span class="pillar-tag" id="hero-pillar-tag"></span>
+        </div>
+        <h2 class="hero-title" id="hero-title"></h2>
+        <p class="hero-why" id="hero-why"></p>
+        <div class="hero-actions">
+          <button class="btn btn-primary" id="start-timer-btn">▶ Start the 1000</button>
+          <button class="btn btn-secondary" id="swap-btn">See other options ↓</button>
+        </div>
+      </div>
+
+      <!-- Timer-running state -->
+      <div class="hero-timer-state">
+        <p class="timer-label">Running your 1000 · phone face down · one window</p>
+        <p class="timer-display" id="timer-display">16:40</p>
+        <p class="timer-target" id="timer-target"></p>
+        <div class="timer-actions">
+          <button class="btn btn-secondary" id="timer-done-early">Mark done</button>
+          <button class="btn btn-danger" id="timer-cancel">Cancel</button>
+        </div>
+        <div class="timer-done-banner" id="timer-done-banner">
+          Logged. Open Claude Code and paste the copied command to write it to your real 1000s log.
+        </div>
+      </div>
+    </div>
+
+    <!-- CONNECTED SOURCES -- collapsible, below hero -->
+    <div class="sources-panel" id="sources-panel">
+      <div class="sources-head" id="sources-toggle">
+        <div class="sources-head-left">
+          <span class="sources-title">What the system is watching</span>
+          <span class="sources-summary" id="sources-summary"></span>
+        </div>
+        <span class="sources-chevron">▾</span>
+      </div>
+
+      <div class="sources-body" id="sources-body"></div>
+    </div>
+
+    <!-- MORE ON TODAY'S RADAR -->
+    <div class="section" id="today-radar">
+      <div class="section-head">
+        <p class="section-eyebrow">Other candidates for tonight</p>
+        <h2 class="section-title">If you have more than one 1000 in you today</h2>
+        <p class="section-prose">The system pulled these from your calendar, messages, and the rhythm of your week. Check the box if you do one. Click <em>Pick this instead</em> to swap it with tonight's 1000 at the top.</p>
+      </div>
+      <div id="radar-list"></div>
+    </div>
+
+    <!-- DEFERRED -->
+    <div class="section" id="deferred">
+      <div class="section-head">
+        <p class="section-eyebrow">On hold</p>
+        <h2 class="section-title">Things you've said matter -- but haven't done yet</h2>
+        <p class="section-prose">When you set up the system, you named the hard things you keep deferring. They sit here until you're ready. Click <em>Bring to today</em> and the system breaks the next physical step into a 1000-second chunk and adds it to today's list.</p>
+      </div>
+      <div id="deferred-list"></div>
+    </div>
+
+    <!-- FILTERED OUT -->
+    <div class="section">
+      <div class="section-head">
+        <p class="section-eyebrow">Filtered out</p>
+        <h2 class="section-title">Things the system saw and decided weren't worth your 1000</h2>
+        <p class="section-prose">These showed up in your inbox or calendar today. The system remembers what you decided not to do in the past, so it filters this kind of thing out before it can hijack your attention. Here so you can disagree if it got something wrong.</p>
+      </div>
+      <div class="filtered" id="skips-list"></div>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="footer">
+      <div>
+        <p class="footer-label">Tonight's slot</p>
+        <p class="footer-value" id="footer-slot"></p>
+      </div>
+      <div>
+        <p class="footer-label">This week so far</p>
+        <p class="footer-value" id="footer-coverage"></p>
+      </div>
+    </div>
+
+    <!-- THE LOOP -- bridges daily 1000 to the rest of the system -->
+    <div class="loop">
+      <p class="loop-eyebrow">The weekly loop</p>
+      <h2 class="loop-title">How tonight's 1000 connects to the rest</h2>
+      <div class="loop-grid">
+        <div class="loop-item">
+          <div class="loop-when">Tonight</div>
+          <p class="loop-what"><span class="loop-cmd">/1000seconds</span> · what you're doing now. One 1000 at your placed slot.</p>
+        </div>
+        <div class="loop-item">
+          <div class="loop-when">Anytime</div>
+          <p class="loop-what"><span class="loop-cmd">/brief</span> · when you're handing work to an LLM. Sharpens the prompt before you delegate.</p>
+        </div>
+        <div class="loop-item">
+          <div class="loop-when">Friday 4pm</div>
+          <p class="loop-what"><span class="loop-cmd">/friday</span> · the weekly close. Matrix triages your week, you confirm kills, the system drafts your witness message. <strong>This is what trains the engine for next week</strong>.</p>
+        </div>
+        <div class="loop-item">
+          <div class="loop-when">Saturday</div>
+          <p class="loop-what">Send the witness message in <strong>bundles/witness-this-week.md</strong>. The peer who reads it is the protocol.</p>
+        </div>
+        <div class="loop-item">
+          <div class="loop-when muted">Monthly</div>
+          <p class="loop-what"><span class="loop-cmd">/pursuit-check</span> · reads your logs and tells you whether a recurring pattern means you're ready for the next tier of work.</p>
+        </div>
+        <div class="loop-item">
+          <div class="loop-when muted">As needed</div>
+          <p class="loop-what"><span class="loop-cmd">/sources</span> · manage what the system watches. Add a tool, remove one, fix a connection.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- EVERY EXPERT CTA -->
+    <div class="install-cta">
+      <p class="install-cta-eyebrow">One-off check-in</p>
+      <h2 class="install-cta-title">Brent in the chair, 45 minutes.</h2>
+      <p class="install-cta-prose">
+        If a pattern showed up in your log you want a senior read on -- a stalled project, a recurring kill, a parked outcome you're not making real -- book a single session. One conversation. No subscription.
+      </p>
+      <a class="btn btn-primary" id="cta-link" href="https://everyexpert.com/totty" style="text-decoration: none; display: inline-block;">Book at everyexpert.com/totty →</a>
+    </div>
+  </div>
+
+  <!-- =================== DONE VIEW =================== -->
+  <div class="view" data-view="done">
+
+    <div class="meta">Your log · last 30 days</div>
+    <h1>Every 1000 you've finished.</h1>
+    <p class="lede">
+      <em>The smallest unit that counts as evidence to yourself that you did the thing.</em> Each row is a real 1000 seconds of focused work you put on something that mattered.
+    </p>
+
+    <!-- STATS STRIP -->
+    <div class="done-strip">
+      <div class="stat-card">
+        <p class="stat-label">Streak</p>
+        <p class="stat-value" id="streak-days"></p>
+        <p class="stat-sub" id="streak-sub"></p>
+      </div>
+      <div class="stat-card">
+        <p class="stat-label">Last 30 days</p>
+        <p class="stat-value" id="sweep-count"></p>
+        <p class="stat-sub" id="sweep-sub"></p>
+      </div>
+      <div class="stat-card">
+        <p class="stat-label">Pillar split (30d)</p>
+        <p class="stat-value" style="font-size: 24px;">P · M · E</p>
+        <div class="pillar-bar" id="pillar-bar"></div>
+        <div class="pillar-legend" id="pillar-legend"></div>
+        <p class="stat-sub" style="margin-top: 10px;">Emotional has been quiet. Your call whether that's true to the week or worth shifting.</p>
+      </div>
+    </div>
+
+    <!-- WEEKLY CALENDAR -->
+    <div class="weeks">
+      <div class="weeks-head">
+        <h2 class="weeks-title">Last four weeks</h2>
+        <div class="weeks-sub">Color = pillar of the day's 1000</div>
+      </div>
+      <div class="week-grid" id="week-grid"></div>
+    </div>
+
+    <!-- TIMELINE -->
+    <div class="section">
+      <div class="section-head">
+        <p class="section-eyebrow">Recent 1000s</p>
+        <h2 class="section-title">Most recent first, with what counted and why</h2>
+      </div>
+
+      <div class="timeline" id="timeline-list"></div>
+    </div>
+
+  </div>
+
+</div>
+
+<div id="toast">Done.</div>
+
+<script>
+(function () {
+  /* RENDER_DATA:START -- the /render command replaces this whole block */
+  var RENDER_DATA = {
+    date: "Tue Jun 9, 2026",
+    metaLine: "Tuesday Jun 9, 2026 · 7:12 AM · Day 14 of install · 1000 #8 tonight",
+    slot: "9:15 PM · home office",
+    coverage: { physical: 4, mental: 7, emotional: 2 },
+    hero: {
+      pillar: "Mental",
+      title: "Write the Day-30 retention email for v2.1.0",
+      reason: "You've chosen v2.1.0 work 4 of 5 days last week. The system noticed and is putting it on top instead of fighting you for the same default each morning.",
+      source: "Granola -- 6/12 standup"
+    },
+    sources: {
+      summary: "5 sources connected -- 1 stale",
+      summaryDots: ["fresh", "fresh", "fresh", "fresh", "stale"],
+      manageHint: "Add, remove, or fix sources via <code>/sources</code> &rarr;",
+      rows: [
+        { status: "fresh", name: "Google Calendar", contribution: "6 meetings, 2 focus blocks today", feeds: "Mental + Emotional" },
+        { status: "fresh", name: "Slack (Kajabi)", contribution: "3 @-mentions, 5 DMs awaiting reply", feeds: "Mental" },
+        { status: "fresh", name: "Granola", contribution: "4 meeting transcripts, 8 action items assigned to you", feeds: "Mental" },
+        { status: "fresh", name: "Strava", contribution: "Last workout 2 days ago, recovery green", feeds: "Physical" },
+        { status: "stale", name: "Family calendar", contribution: "1 commitment (kid pickup 3:15 PM)", feeds: "Emotional" }
+      ]
+    },
+    // radar item.badge: "default" | "star" | null  (null = no badge, matching the original mock)
+    radar: [
+      { id: "kbell", pillar: "Physical", title: "Kettlebell circuit, garage, 1000s", why: "2 days since last session. Strava says you're recovered.", source: "Strava", badge: null },
+      { id: "ea-brief", pillar: "Mental", title: "Draft Expert Agents launch brief", why: "3 @-mentions in Slack this week; Sarah is waiting on it.", source: "Slack", badge: null },
+      { id: "sim-review", pillar: "Mental", title: "Review the v2.1.0 simulation findings against real logs", why: "Ship was Friday. The retention check window opens this week.", source: "Granola", badge: null },
+      { id: "dinner", pillar: "Emotional", title: "Phones-down dinner with the family", why: "5 days since the last fully-present one -- the system noticed.", source: "Family calendar", badge: null },
+      { id: "dad-call", pillar: "Emotional", title: "Voice memo to dad -- no agenda", why: "14 days since last call. Family thread has been quiet 11 days.", source: "Family calendar", badge: null }
+    ],
+    deferred: [
+      { id: "sister", pillar: "Physical", title: "Visit your sister by end of June", note: "\"I want to be there before her birthday.\"", since: "On hold since May 12", source: "pursuits-parking-lot.md" },
+      { id: "book", pillar: "Mental", title: "First chapter of the operator-OS book", note: "\"500 words of actual prose, not an outline.\"", since: "On hold since Apr 3", source: "pursuits-parking-lot.md" },
+      { id: "anna-talk", pillar: "Emotional", title: "Real conversation with Anna about the summer schedule", note: "\"We keep brushing past it. 20 minutes, no laptops.\"", since: "On hold since May 21", source: "pursuits-parking-lot.md" }
+    ],
+    skips: [
+      { title: "Reply to the #all-hands recap thread", reason: "you decided this kind of low-leverage reply wasn't worth your time in May" },
+      { title: "Re-review the brand voice doc", reason: "you've already said no twice in May" },
+      { title: "\"Quick\" review of #ai-tooling Slack", reason: "not your channel" }
+    ],
+    log: {
+      streakDays: 7,
+      streakSub: "Seven days running with at least one 1000 in the bank. <span class=\"accent\">That's the evidence.</span>",
+      count30: 23,
+      count30Sub: "1000s logged. About 6 hours and 23 minutes of focused work that wouldn't have happened without it.",
+      pillarSplit: { physical: 8, mental: 12, emotional: 3 },
+      calendar: [
+        { date: "2026-05-13", label: "13", pillar: "Mental", week: "Wk 21" },
+        { date: "2026-05-14", label: "14", pillar: "Physical" },
+        { date: "2026-05-15", label: "15", pillar: "Mental" },
+        { date: "2026-05-16", label: "16", pillar: "Mental" },
+        { date: "2026-05-17", label: "17", pillar: "Emotional" },
+        { date: "2026-05-18", label: "18", pillar: null },
+        { date: "2026-05-19", label: "19", pillar: "Physical" },
+        { date: "2026-05-20", label: "20", pillar: "Mental", week: "Wk 22" },
+        { date: "2026-05-21", label: "21", pillar: "Mental" },
+        { date: "2026-05-22", label: "22", pillar: "Physical" },
+        { date: "2026-05-23", label: "23", pillar: "Mental" },
+        { date: "2026-05-24", label: "24", pillar: "Mental" },
+        { date: "2026-05-25", label: "25", pillar: null },
+        { date: "2026-05-26", label: "26", pillar: "Emotional" },
+        { date: "2026-05-27", label: "27", pillar: "Mental", week: "Wk 23" },
+        { date: "2026-05-28", label: "28", pillar: "Physical" },
+        { date: "2026-05-29", label: "29", pillar: "Mental" },
+        { date: "2026-05-30", label: "30", pillar: "Mental" },
+        { date: "2026-05-31", label: "31", pillar: "Mental" },
+        { date: "2026-06-01", label: "1", pillar: "Physical" },
+        { date: "2026-06-02", label: "2", pillar: "Emotional" },
+        { date: "2026-06-03", label: "3", pillar: "Mental", week: "Wk 24" },
+        { date: "2026-06-04", label: "4", pillar: "Mental" },
+        { date: "2026-06-05", label: "5", pillar: "Physical" },
+        { date: "2026-06-06", label: "6", pillar: "Mental" },
+        { date: "2026-06-07", label: "7", pillar: "Physical" },
+        { date: "2026-06-08", label: "8", pillar: "Mental" },
+        { date: "2026-06-09", label: "9", pillar: null, today: true }
+      ],
+      timeline: [
+        { date: "Mon Jun 8", pillar: "Mental", time: "17:02 → 17:18:40", title: "Drafted v2.1.0 ship announcement for Time Well Spent", why: "Override-promoted. You kept picking ship work over the suggested defaults all week." },
+        { date: "Sun Jun 7", pillar: "Physical", time: "09:14 → 09:30:54", title: "Kettlebell circuit, garage", why: "From your default. Strava synced after." },
+        { date: "Sat Jun 6", pillar: "Mental", time: "16:45 → 17:01:40", title: "Reviewed simulation findings against actual logs", why: "Self-picked. Promoted from radar." },
+        { date: "Fri Jun 5", pillar: "Mental", time: "16:00 → 16:30", title: "Friday close ritual -- matrix + kills + witness draft", why: "Weekly ritual, not a 1000s. Marked here for the timeline." },
+        { date: "Thu Jun 4", pillar: "Mental", time: "21:15 → 21:31:40", title: "Day-3 post-install email rewrite for v2.1.0", why: "From your default." },
+        { date: "Wed Jun 3", pillar: "Physical", time: "06:22 → 06:38:40", title: "Morning run, 2 miles", why: "Self-picked. Slot moved earlier for this one." },
+        { date: "Tue Jun 2", pillar: "Emotional", time: "19:30 → 19:46:40", title: "Real conversation with Anna about the summer schedule", why: "Brought up from on-hold list. The conversation you'd been parking for 6 weeks." }
+      ]
+    },
+    ctaUrl: "https://everyexpert.com/totty"
+  };
+  /* RENDER_DATA:END */
+
+  // ============ HELPERS ============
+  function el(tag, cls, html) {
+    var node = document.createElement(tag);
+    if (cls) node.className = cls;
+    if (html != null) node.innerHTML = html;
+    return node;
+  }
+  function esc(s) {
+    return String(s == null ? "" : s)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+  }
+  function pillarClass(p) { return String(p || "").toLowerCase(); }
+  function setText(id, text) {
+    var node = document.getElementById(id);
+    if (node) node.textContent = text == null ? "" : text;
+  }
+  function setHTML(id, html) {
+    var node = document.getElementById(id);
+    if (node) node.innerHTML = html == null ? "" : html;
+  }
+
+  // Build one .item-row carrying every class/attribute the handlers query.
+  // `promoteLabel` is the text on the promote button; `since` (optional) shows the on-hold chip.
+  function buildItemRow(item, promoteLabel, since) {
+    var row = el("div", "item-row");
+    row.setAttribute("data-id", item.id);
+    row.setAttribute("data-pillar", item.pillar);
+    row.setAttribute("data-title", item.title);
+    if (item.source != null) row.setAttribute("data-source", item.source);
+
+    var check = el("button", "item-check");
+    check.setAttribute("aria-label", "Mark done");
+    check.textContent = "✓";
+
+    var body = el("div", "item-row-body");
+    var meta = el("div", "item-row-meta");
+    var pill = el("span", "pillar-pill " + pillarClass(item.pillar));
+    pill.textContent = item.pillar;
+    meta.appendChild(pill);
+    // Optional badge: "star" (a kept favorite) or "default" (the system's suggested default).
+    // Additive only -- rows with badge null/absent render exactly like the original mock.
+    if (item.badge === "star" || item.badge === "default") {
+      var badge = el("span");
+      if (item.badge === "star") {
+        badge.textContent = "★";
+        badge.setAttribute("title", "Saved favorite");
+        badge.setAttribute("aria-label", "Saved favorite");
+        badge.style.cssText = "color: var(--star); font-size: 12px; line-height: 1;";
+      } else {
+        badge.textContent = "Default";
+        badge.setAttribute("title", "The system's suggested default");
+        badge.style.cssText = "color: var(--star); font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase;";
+      }
+      meta.appendChild(badge);
+    }
+    if (since) {
+      var sinceEl = el("span", "deferred-since");
+      sinceEl.textContent = since;
+      meta.appendChild(document.createTextNode(" "));
+      meta.appendChild(sinceEl);
+    }
+    var title = el("p", "item-title");
+    title.textContent = item.title;
+    var why = el("p", "item-why");
+    why.textContent = item.why != null ? item.why : (item.note != null ? item.note : "");
+    body.appendChild(meta);
+    body.appendChild(title);
+    body.appendChild(why);
+
+    var promote = el("button", "item-promote");
+    promote.textContent = promoteLabel;
+
+    row.appendChild(check);
+    row.appendChild(body);
+    row.appendChild(promote);
+    return row;
+  }
+
+  // ============ HYDRATE -- build every dynamic region from RENDER_DATA ============
+  function hydrate(data) {
+    // Title + header
+    document.title = "Today's 1000 Seconds -- " + (data.date || "");
+    setText("meta-line", data.metaLine || data.date || "");
+
+    // Hero
+    var hero = data.hero || {};
+    setText("hero-pillar-tag", hero.pillar || "");
+    setText("hero-title", hero.title || "");
+    var whyParts = [];
+    if (hero.reason) whyParts.push('<span class="highlight">' + esc(hero.reason) + "</span>");
+    if (hero.source) whyParts.push('<span class="hero-source">Source: ' + esc(hero.source) + "</span>");
+    setHTML("hero-why", whyParts.join(" "));
+    // Timer target mirrors the hero title.
+    setText("timer-target", hero.title || "");
+
+    // Sources panel (content is data-driven so no sample markup is orphaned)
+    var sources = data.sources || {};
+    var dots = (sources.summaryDots || []).map(function (s) {
+      var c = s === "stale" ? " stale" : s === "error" ? " error" : "";
+      return '<span class="summary-dot' + c + '"></span>';
+    }).join("");
+    setHTML("sources-summary", '<span class="summary-dots">' + dots + "</span>" + esc(sources.summary || ""));
+    var sbody = document.getElementById("sources-body");
+    if (sbody) {
+      sbody.innerHTML = "";
+      (sources.rows || []).forEach(function (r) {
+        var row = el("div", "source-row");
+        var statusCls = r.status === "stale" ? " stale" : r.status === "error" ? " error" : " fresh";
+        var feeds = r.feeds ? ' <span class="feeds">&middot; ' + esc(r.feeds) + "</span>" : "";
+        row.innerHTML =
+          '<span class="source-status' + statusCls + '"></span>' +
+          '<span class="source-name">' + esc(r.name) + "</span>" +
+          '<span class="source-contribution">' + esc(r.contribution) + feeds + "</span>";
+        sbody.appendChild(row);
+      });
+      if (sources.manageHint) {
+        var action = el("a", "sources-action");
+        action.setAttribute("href", "#");
+        action.innerHTML = sources.manageHint;
+        sbody.appendChild(action);
+      }
+    }
+
+    // Today radar rows
+    var radarList = document.getElementById("radar-list");
+    if (radarList) {
+      radarList.innerHTML = "";
+      (data.radar || []).forEach(function (item) {
+        radarList.appendChild(buildItemRow(item, "Pick this instead"));
+      });
+    }
+
+    // Deferred / parked rows
+    var deferredList = document.getElementById("deferred-list");
+    if (deferredList) {
+      deferredList.innerHTML = "";
+      (data.deferred || []).forEach(function (item) {
+        deferredList.appendChild(buildItemRow(item, "Bring to today →", item.since));
+      });
+    }
+
+    // Proposed skips
+    var skipsList = document.getElementById("skips-list");
+    if (skipsList) {
+      skipsList.innerHTML = "";
+      (data.skips || []).forEach(function (skip) {
+        var p = el("p", "filtered-item");
+        if (typeof skip === "string") {
+          p.textContent = skip;
+        } else {
+          p.innerHTML = esc(skip.title) +
+            (skip.reason ? ' <span class="reason">-- ' + esc(skip.reason) + "</span>" : "");
+        }
+        skipsList.appendChild(p);
+      });
+    }
+
+    // Footer
+    setText("footer-slot", data.slot || "");
+    var cov = data.coverage || {};
+    var emo = '<span class="warn">Emotional ' + esc(cov.emotional) + "/7</span>";
+    setHTML(
+      "footer-coverage",
+      "Physical " + esc(cov.physical) + "/7 &middot; Mental " + esc(cov.mental) + "/7 &middot; " + emo
+    );
+
+    // CTA
+    var ctaUrl = data.ctaUrl || "https://everyexpert.com/totty";
+    var cta = document.getElementById("cta-link");
+    if (cta) {
+      cta.setAttribute("href", ctaUrl);
+      var label = ctaUrl.replace(/^https?:\/\//, "");
+      cta.textContent = "Book at " + label + " →";
+    }
+
+    // ============ LOG TAB ============
+    var log = data.log || {};
+    setText("streak-days", log.streakDays != null ? log.streakDays : "");
+    setHTML("streak-sub", log.streakSub || "");
+    setText("sweep-count", log.count30 != null ? log.count30 : "");
+    setHTML("sweep-sub", log.count30Sub || "");
+
+    // Pillar split bar + legend
+    var split = log.pillarSplit || {};
+    var bar = document.getElementById("pillar-bar");
+    if (bar) {
+      bar.innerHTML = "";
+      ["physical", "mental", "emotional"].forEach(function (p) {
+        var seg = el("div", "seg " + p);
+        seg.style.flex = String(split[p] || 0);
+        bar.appendChild(seg);
+      });
+    }
+    var legend = document.getElementById("pillar-legend");
+    if (legend) {
+      legend.innerHTML = "";
+      [["physical", "Physical"], ["mental", "Mental"], ["emotional", "Emotional"]].forEach(function (pair) {
+        var key = el("div", "key");
+        key.innerHTML = '<span class="swatch ' + pair[0] + '"></span>' + pair[1] + " " + esc(split[pair[0]] || 0);
+        legend.appendChild(key);
+      });
+    }
+
+    // Calendar grid
+    var grid = document.getElementById("week-grid");
+    if (grid) {
+      grid.innerHTML = "";
+      // header row: empty corner + day initials
+      grid.appendChild(el("div"));
+      ["M", "T", "W", "T", "F", "S", "S"].forEach(function (d) {
+        var head = el("div", "day-head");
+        head.textContent = d;
+        grid.appendChild(head);
+      });
+      (log.calendar || []).forEach(function (day) {
+        if (day.week) {
+          var label = el("div", "week-label");
+          label.textContent = day.week;
+          grid.appendChild(label);
+        }
+        var cls = "day";
+        if (day.pillar) cls += " " + pillarClass(day.pillar);
+        if (day.today) cls += " today";
+        if (day.future) cls += " future";
+        var cell = el("div", cls);
+        cell.textContent = day.label != null ? day.label : "";
+        if (day.date) cell.setAttribute("data-date", day.date);
+        grid.appendChild(cell);
+      });
+    }
+
+    // Timeline
+    var timeline = document.getElementById("timeline-list");
+    if (timeline) {
+      timeline.innerHTML = "";
+      (log.timeline || []).forEach(function (entry) {
+        var dayEl = el("div", "timeline-day");
+        var meta = el("div", "timeline-meta");
+        meta.innerHTML =
+          "<span>" + esc(entry.date) + "</span> " +
+          '<span class="pillar-pill ' + pillarClass(entry.pillar) + '">' + esc(entry.pillar) + "</span>" +
+          (entry.time ? " <span>" + esc(entry.time) + "</span>" : "");
+        var title = el("p", "timeline-title");
+        title.textContent = entry.title;
+        var detail = el("p", "timeline-detail");
+        detail.textContent = entry.why || "";
+        dayEl.appendChild(meta);
+        dayEl.appendChild(title);
+        dayEl.appendChild(detail);
+        timeline.appendChild(dayEl);
+      });
+    }
+  }
+
+  // Build the DOM from data BEFORE attaching interactive handlers so they bind to generated nodes.
+  hydrate(RENDER_DATA);
+
+  // ============ TABS ============
+  var tabs = document.querySelectorAll(".tab");
+  var views = document.querySelectorAll(".view");
+  tabs.forEach(function (tab) {
+    tab.addEventListener("click", function () {
+      var name = tab.getAttribute("data-view");
+      tabs.forEach(function (t) { t.classList.toggle("active", t === tab); });
+      views.forEach(function (v) { v.classList.toggle("active", v.getAttribute("data-view") === name); });
+      window.location.hash = name;
+    });
+  });
+  // Restore tab from hash
+  if (window.location.hash === "#done") {
+    document.querySelector('.tab[data-view="done"]').click();
+  }
+
+  // ============ SOURCES PANEL COLLAPSE ============
+  var sourcesPanel = document.getElementById("sources-panel");
+  var sourcesToggle = document.getElementById("sources-toggle");
+  var sourcesKey = "sources-panel-expanded";
+  // Default: expanded on first visit, then remember preference
+  var savedState = localStorage.getItem(sourcesKey);
+  var startExpanded = savedState === null ? true : savedState === "true";
+  if (startExpanded) sourcesPanel.classList.add("expanded");
+  if (sourcesToggle) {
+    sourcesToggle.addEventListener("click", function () {
+      var nowExpanded = sourcesPanel.classList.toggle("expanded");
+      try { localStorage.setItem(sourcesKey, String(nowExpanded)); } catch (e) {}
+    });
+  }
+
+  // ============ TOAST ============
+  var toast = document.getElementById("toast");
+  var toastTimer;
+  function showToast(msg) {
+    toast.textContent = msg;
+    toast.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { toast.classList.remove("show"); }, 2600);
+  }
+
+  // ============ CHECKBOX STATE (per-day localStorage) ============
+  var todayKey = "punchlist-done-" + new Date().toISOString().slice(0, 10);
+  var saved = {};
+  try { saved = JSON.parse(localStorage.getItem(todayKey) || "{}"); } catch (e) {}
+  function persist() {
+    try { localStorage.setItem(todayKey, JSON.stringify(saved)); } catch (e) {}
+  }
+
+  document.querySelectorAll(".item-row").forEach(function (row) {
+    var id = row.getAttribute("data-id");
+    var pillar = row.getAttribute("data-pillar");
+    var title = row.getAttribute("data-title");
+    var check = row.querySelector(".item-check");
+    if (saved[id]) { row.classList.add("done"); check.classList.add("checked"); }
+
+    check.addEventListener("click", function (e) {
+      e.stopPropagation();
+      var isDone = row.classList.toggle("done");
+      check.classList.toggle("checked", isDone);
+      if (isDone) {
+        saved[id] = { pillar: pillar, title: title, marked_at: new Date().toISOString() };
+        showToast('"' + title + '" marked done. Run /sync in Claude Code to log it to your real 1000s log.');
+      } else {
+        delete saved[id];
+      }
+      persist();
+    });
+  });
+
+  // ============ TIMER ============
+  var hero = document.getElementById("hero");
+  var startBtn = document.getElementById("start-timer-btn");
+  var swapBtn = document.getElementById("swap-btn");
+  var doneEarlyBtn = document.getElementById("timer-done-early");
+  var cancelBtn = document.getElementById("timer-cancel");
+  var timerDisplay = document.getElementById("timer-display");
+  var timerBanner = document.getElementById("timer-done-banner");
+
+  // Timer logs against the hero's current pick (data-driven, not hardcoded).
+  var heroTitle = (RENDER_DATA.hero && RENDER_DATA.hero.title) || "Tonight's 1000";
+  var heroPillar = (RENDER_DATA.hero && RENDER_DATA.hero.pillar) || "Mental";
+
+  var TOTAL = 1000;
+  var remaining = TOTAL;
+  var intervalId = null;
+  var startedAt = null;
+
+  function fmt(s) {
+    var m = Math.floor(s / 60);
+    var sec = s % 60;
+    return m + ":" + (sec < 10 ? "0" : "") + sec;
+  }
+  function render() { timerDisplay.textContent = fmt(remaining); }
+  function startTimer() {
+    remaining = TOTAL;
+    render();
+    startedAt = new Date();
+    hero.classList.add("timer-active");
+    timerBanner.classList.remove("show");
+    intervalId = setInterval(function () {
+      remaining -= 1;
+      render();
+      if (remaining <= 0) {
+        clearInterval(intervalId);
+        intervalId = null;
+        completeTimer();
+      }
+    }, 1000);
+  }
+  function completeTimer() {
+    timerDisplay.textContent = "Done.";
+    timerBanner.classList.add("show");
+    logCompletion(heroTitle, heroPillar);
+    // Copy a paste-ready sync command for Claude Code
+    var stamp = new Date().toISOString();
+    var cmd = '/1000seconds log "' + heroTitle + '" --pillar=' + heroPillar + ' --completed_at=' + stamp;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(cmd);
+    }
+    setTimeout(function () {
+      hero.classList.remove("timer-active");
+      timerBanner.classList.remove("show");
+    }, 5000);
+  }
+  function cancelTimer() {
+    clearInterval(intervalId);
+    intervalId = null;
+    hero.classList.remove("timer-active");
+    timerBanner.classList.remove("show");
+  }
+  function doneEarly() {
+    if (intervalId) clearInterval(intervalId);
+    intervalId = null;
+    completeTimer();
+  }
+  function logCompletion(title, pillar) {
+    var historyKey = "punchlist-history";
+    var history = [];
+    try { history = JSON.parse(localStorage.getItem(historyKey) || "[]"); } catch (e) {}
+    history.unshift({ title: title, pillar: pillar, completed_at: new Date().toISOString() });
+    localStorage.setItem(historyKey, JSON.stringify(history));
+  }
+
+  if (startBtn) startBtn.addEventListener("click", startTimer);
+  if (cancelBtn) cancelBtn.addEventListener("click", cancelTimer);
+  if (doneEarlyBtn) doneEarlyBtn.addEventListener("click", doneEarly);
+  if (swapBtn) swapBtn.addEventListener("click", function () {
+    document.getElementById("today-radar").scrollIntoView({ behavior: "smooth", block: "start" });
+  });
+
+  // Promote buttons
+  document.querySelectorAll(".item-promote").forEach(function (btn) {
+    btn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      var row = btn.closest(".item-row");
+      var section = row.closest(".section");
+      var title = row.querySelector(".item-title").textContent.trim();
+      var isDeferred = section.id === "deferred";
+      if (isDeferred) {
+        showToast('"' + title + '" -- moved to today.');
+      } else {
+        showToast('"' + title + '" -- promoted to tonight\'s pick.');
+      }
+    });
+  });
+})();
+</script>
+</body>
+</html>
