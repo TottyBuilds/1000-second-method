@@ -2,6 +2,23 @@
 
 All notable changes to The 1000 Second Method installer.
 
+## v2.3.0 -- 2026-06-24
+
+The honest-render release. The web view stops pretending it tracks anything on its own, and it shows up without being asked.
+
+What changes:
+- **`/1000seconds` renders the web view automatically.** Running the daily command now generates and opens `today.html` at the end of its run, in addition to the terminal output. You no longer have to remember `/render` -- it stays as the on-demand refresh.
+- **The render is an honest companion, not a fake tracker.** A browser page cannot write to your local files, so it never could log a 1000 by itself. The page now says so: a companion-view note up top, and checking an item (or finishing the in-page timer) copies a ready-to-paste line you drop back into your agent (Claude or ChatGPT), which keeps the real `log/sweeps.md`. The agent owns the log; the page is the surface.
+- **Finishing the timer stays visibly done.** The hero used to snap back to the "Start the 1000" button a few seconds after you finished. It now settles into a persistent "done on this page" state (with a copy-again and an Undo) that survives a reload, so a completed 1000 stays on screen until you confirm it with your agent.
+- **Removed two commands that never existed.** The checkbox told you to run `/sync` and the timer copied a `/1000seconds log "..."` command -- neither is a real command. Both are gone, replaced by the paste-ready confirmation line.
+
+What stays the same:
+- Five protocols. Same names. Same IP.
+- The single-file, paste-one-URL install. No backend, no account, no phone sync -- the log still lives in your workspace.
+- `/render` still exists. The page is still read-only with respect to your files.
+
+Breaking: nothing. v2.2.x installs run `/1000s-update` to pick up the auto-render step in `/1000seconds` and the manual-refresh note on `/render`. The honest copy lands on its own, since the template is fetched fresh on every render. Logs and `OPERATOR.md` preserved.
+
 ## v2.2.1 -- 2026-06-14
 
 The public-release hardening pass. No new protocols, no new mechanics -- this is the release that makes the installer safe to hand to a stranger from a single pasted URL.

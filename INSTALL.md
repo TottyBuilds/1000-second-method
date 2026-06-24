@@ -1,4 +1,4 @@
-# The 1000 Second Method -- Installer (v2.2.1)
+# The 1000 Second Method -- Installer (v2.3.0)
 
 You are about to install the five protocols and the Daily Punchlist engine into the operator's workspace. This file is the wizard. The operator pasted a URL into Claude Code that points at this file, and now you are reading it.
 
@@ -12,7 +12,7 @@ Follow this file exactly. Do not improvise. The output quality of the install is
 
 Every count, name, version, and URL in this installer derives from this block. If prose anywhere below disagrees with it, this block wins and the prose is the bug.
 
-- **Version:** 2.2.1
+- **Version:** 2.3.0
 - **Raw repo base:** `https://raw.githubusercontent.com/TottyBuilds/1000-second-method/main`
 - **Generated files:** ~18 into `1000-second-system/` (the seeded brief can be skipped, so the honest count is "about 18")
 - **Slash commands, always installed:** 7 -- `/1000seconds`, `/friday`, `/brief`, `/pursuit-check`, `/1000s-update`, `/sources`, `/render`
@@ -222,7 +222,7 @@ This is the operator's personal Claude context. Every slash command reads this f
 ```markdown
 # Operator: [NAME]
 
-Personal context for The 1000 Second Method, installed [DATE]. Installer version 2.2.1.
+Personal context for The 1000 Second Method, installed [DATE]. Installer version 2.3.0.
 
 ## Life shape
 
@@ -287,7 +287,7 @@ A short orientation for the operator. Not the same as the repo README. This is t
 ```markdown
 # Your 1000 Second System
 
-Installed [DATE]. Version 2.2.1.
+Installed [DATE]. Version 2.3.0.
 
 ## What's here
 
@@ -1032,8 +1032,9 @@ If `PUNCHLIST.md` is empty or older than 12 hours OR the last sweep was more tha
 
 Then:
 1. Print the full punchlist to the terminal. The suggested default is already highlighted at the top. If a stale-state line, slot-adherence flag, or unsent-draft note is present, they appear in their designated positions (lead-line, footer, footer).
-2. Prompt the operator: "Start now? [enter: begin 16:40 on the suggested default · number: override with another item · line: write your own · q: just looking]"
-3. Branch on the response:
+2. Render the visual companion view, in addition to the terminal output. Follow the render procedure in `.claude/commands/render.md` (fetch the template, build a `RENDER_DATA` object from the punchlist you just produced, replace the `RENDER_DATA` block, write `1000-second-system/today.html`), then open it in the operator's browser. This is why the operator no longer needs to run `/render` separately. If you are running headless (a cloud routine, or no display is available), write the file but skip opening it, and never block the rest of the command on the render. The page is a companion view only: checking an item or finishing the in-page timer copies a ready-to-paste line for the operator to drop back into you (or ChatGPT) so the 1000 is recorded for real. The page never writes `log/sweeps.md` itself.
+3. Prompt the operator: "Start now? [enter: begin 16:40 on the suggested default · number: override with another item · line: write your own · q: just looking]"
+4. Branch on the response:
    - **Enter or number or custom line:** Start the timer.
      - Note start time and pillar tag (from the chosen item or, for a custom line, ask the operator which pillar in one short follow-up).
      - Append a new entry to `1000-second-system/log/sweeps.md` with: date, start time, pillar, activity (single line), source (if from the punchlist), whether this was the suggested default or an override (and what category it overrode TO), and outcome marker `in-progress`. The override category tagging is what feeds the engine's learning loop on the next regen.
@@ -1200,7 +1201,7 @@ Voice: Brent's.
 
 ### Command 7: `.claude/commands/render.md` (the visual surface)
 
-Read-only and ad-hoc. Generates an HTML view of today's punchlist the operator opens in their browser: a real in-browser 16:40 timer, per-item checkboxes, a Log tab of their evidence, and an Every Expert link in the footer. It writes no logs and never nudges -- if the operator wants a sweep counted for real, they run `/1000seconds`.
+Read-only and ad-hoc. Generates an HTML view of today's punchlist the operator opens in their browser: a real in-browser 16:40 timer, per-item checkboxes, a Log tab of their evidence, and an Every Expert link in the footer. It writes no logs and never nudges -- if the operator wants a sweep counted for real, they run `/1000seconds`. As of v2.3.0, `/1000seconds` renders this view automatically at the end of its run, so `/render` is now the on-demand refresh: use it to regenerate the view without rerunning the daily command. The same procedure powers both, so keep it self-contained here -- `/1000seconds` points at this file to render.
 
 ```markdown
 ---
@@ -1355,7 +1356,7 @@ Voice: Brent's.
 
 ## Phase 5: Closing
 
-Write `1000-second-system/.installed-version` containing just `2.2.1`.
+Write `1000-second-system/.installed-version` containing just `2.3.0`.
 
 Then close with this message to the operator (in Brent's voice, no em dashes, paraphrase but match the shape):
 
@@ -1415,7 +1416,7 @@ Before the Phase 5 closing message, verify the install you just wrote. This is t
    Portable check: `grep -rn "$(printf '\342\200\224')" 1000-second-system .claude/commands` (the `printf` emits the em dash byte sequence, so this installer file stays clean) -> expect no matches.
 2. **No leftover tokens.** No finished file still contains a `[BRACKET PLACEHOLDER]` you forgot to fill, an unresolved `[IF ...]` conditional, or a `{{...}}` token.
    `grep -rnE "\[[A-Z][A-Z _/-]+\]|\[IF |\{\{" 1000-second-system` -> expect no matches in finished prose.
-3. **Version stamps agree.** `.installed-version`, the `OPERATOR.md` header, and the operator `README.md` all show the Manifest Version (2.2.1). They must match.
+3. **Version stamps agree.** `.installed-version`, the `OPERATOR.md` header, and the operator `README.md` all show the Manifest Version (2.3.0). They must match.
 4. **The expected set exists.** Seven command files in `.claude/commands/` (`1000seconds`, `friday`, `brief`, `pursuit-check`, `1000s-update`, `sources`, `render`), plus `routines` only if the operator enabled cloud routines. The core Phase 2 files exist. Every command file has YAML frontmatter with a `description`.
 
 If any check fails, fix it before you close. The operator never sees this checklist -- they just get a correct install.

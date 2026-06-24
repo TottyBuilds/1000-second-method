@@ -90,10 +90,28 @@
     color: var(--text-soft);
     font-size: clamp(15px, 2vw, 17px);
     line-height: 1.55;
-    margin: 0 0 36px;
+    margin: 0 0 18px;
     max-width: 640px;
   }
   .lede .term { color: var(--accent); font-weight: 500; }
+
+  /* COMPANION MODEL NOTE -- the page is a view, the agent owns the log */
+  .companion-note {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    background: var(--panel-soft);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 10px;
+    padding: 12px 16px;
+    margin: 0 0 36px;
+    max-width: 660px;
+    color: var(--text-soft);
+    font-size: 13px;
+    line-height: 1.55;
+  }
+  .companion-note strong { color: var(--accent); font-weight: 500; }
 
   /* CONNECTED SOURCES PANEL */
   .sources-panel {
@@ -294,6 +312,27 @@
   .hero.timer-active .hero-default-state { display: none; }
   .hero-timer-state { display: none; }
   .hero.timer-active .hero-timer-state { display: block; }
+
+  /* DONE MODE -- hero stays visibly complete after a 1000, until undone */
+  .hero-done-state { display: none; }
+  .hero.done {
+    text-align: center;
+    padding: 44px 28px;
+    border-color: rgba(155, 184, 111, 0.4);
+  }
+  .hero.done .hero-default-state,
+  .hero.done .hero-timer-state { display: none; }
+  .hero.done .hero-done-state { display: block; }
+  .hero-eyebrow-done { justify-content: center; color: var(--physical); }
+  .hero-eyebrow-done .dot { background: var(--physical); }
+  .hero-done-note {
+    color: var(--text-soft);
+    font-size: 14px;
+    line-height: 1.55;
+    margin: 0 auto 24px;
+    max-width: 520px;
+  }
+  .hero-done-actions { justify-content: center; }
   .timer-display {
     font-family: 'DM Serif Display', serif;
     font-size: clamp(72px, 12vw, 120px);
@@ -818,8 +857,13 @@
     <div class="meta" id="meta-line"></div>
     <h1>One thing today. 1000 seconds.</h1>
     <p class="lede">
-      Tonight's 1000, what else is on your radar, and what you've been putting off. Check off whatever you finish.
+      Tonight's 1000, what else is on your radar, and what you've been putting off.
     </p>
+
+    <!-- COMPANION MODEL NOTE -->
+    <div class="companion-note">
+      <span>This page is a companion view. Checking an item marks it here -- your agent (<strong>Claude or ChatGPT</strong>) keeps the real log. When you check something off or finish the timer, the page copies a ready-to-paste line. Drop it into your agent to record the 1000 for real.</span>
+    </div>
 
     <!-- HERO -->
     <div class="hero" id="hero">
@@ -848,7 +892,23 @@
           <button class="btn btn-danger" id="timer-cancel">Cancel</button>
         </div>
         <div class="timer-done-banner" id="timer-done-banner">
-          Logged. Open Claude Code and paste the copied command to write it to your real 1000s log.
+          Copied. Paste the line into Claude or ChatGPT to record this 1000 -- nothing is logged until you do.
+        </div>
+      </div>
+
+      <!-- Completed state -- persists until undone -->
+      <div class="hero-done-state">
+        <div class="hero-eyebrow hero-eyebrow-done">
+          <span class="dot"></span>
+          Tonight's 1000 · done on this page
+        </div>
+        <h2 class="hero-title" id="hero-done-title"></h2>
+        <p class="hero-done-note">
+          Marked done here<span id="hero-done-time"></span>. The line is on your clipboard -- paste it into Claude or ChatGPT to record this 1000. Nothing is logged until you do.
+        </p>
+        <div class="hero-actions hero-done-actions">
+          <button class="btn btn-secondary" id="hero-copy-again">Copy the line again</button>
+          <button class="btn btn-danger" id="hero-undo">Undo</button>
         </div>
       </div>
     </div>
@@ -1409,6 +1469,53 @@
     try { localStorage.setItem(todayKey, JSON.stringify(saved)); } catch (e) {}
   }
 
+  // The page never writes the real log -- it hands the operator a ready-to-paste
+  // line so their agent (Claude or ChatGPT) records the 1000. This is the bridge.
+  function clockTime() {
+    var d = new Date();
+    var h = d.getHours(), m = d.getMinutes();
+    var ap = h >= 12 ? "pm" : "am";
+    h = h % 12; if (h === 0) h = 12;
+    return h + ":" + (m < 10 ? "0" : "") + m + ap;
+  }
+  function confirmationLine(title, pillar) {
+    return 'Log tonight\'s 1000 as done: "' + title + '" -- pillar ' + pillar + ', finished ' + clockTime() + '.';
+  }
+  // Synchronous copy that works inside a click gesture even on file:// and in
+  // contexts where the async Clipboard API is blocked. Returns true on success.
+  function legacyCopy(text) {
+    try {
+      var ta = document.createElement("textarea");
+      ta.value = text;
+      ta.setAttribute("readonly", "");
+      ta.style.position = "fixed";
+      ta.style.top = "-1000px";
+      ta.style.opacity = "0";
+      document.body.appendChild(ta);
+      ta.focus();
+      ta.select();
+      ta.setSelectionRange(0, text.length);
+      var ok = document.execCommand("copy");
+      document.body.removeChild(ta);
+      return ok;
+    } catch (e) { return false; }
+  }
+  // Copies the confirmation line and reports honestly whether it landed.
+  // Order matters: the synchronous fallback runs inside the gesture; the async
+  // API is a best-effort secondary so we never claim success we can't confirm.
+  function copyConfirmation(title, pillar) {
+    var line = confirmationLine(title, pillar);
+    var ok = legacyCopy(line);
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      try { navigator.clipboard.writeText(line).then(null, function () {}); } catch (e) {}
+    }
+    if (!ok) {
+      // Could not copy automatically -- hand the operator the line to copy by hand.
+      try { window.prompt("Copy this line into Claude or ChatGPT:", line); ok = true; } catch (e) {}
+    }
+    return { ok: ok, line: line };
+  }
+
   document.querySelectorAll(".item-row").forEach(function (row) {
     var id = row.getAttribute("data-id");
     var pillar = row.getAttribute("data-pillar");
@@ -1422,7 +1529,10 @@
       check.classList.toggle("checked", isDone);
       if (isDone) {
         saved[id] = { pillar: pillar, title: title, marked_at: new Date().toISOString() };
-        showToast('"' + title + '" marked done. Run /sync in Claude Code to log it to your real 1000s log.');
+        var res = copyConfirmation(title, pillar);
+        showToast(res.ok
+          ? 'Copied. Paste into Claude or ChatGPT to log "' + title + '" for real.'
+          : 'Paste this into Claude or ChatGPT to log it: ' + res.line);
       } else {
         delete saved[id];
       }
@@ -1438,6 +1548,11 @@
   var cancelBtn = document.getElementById("timer-cancel");
   var timerDisplay = document.getElementById("timer-display");
   var timerBanner = document.getElementById("timer-done-banner");
+  var heroDoneTitle = document.getElementById("hero-done-title");
+  var heroDoneTime = document.getElementById("hero-done-time");
+  var heroCopyAgainBtn = document.getElementById("hero-copy-again");
+  var heroUndoBtn = document.getElementById("hero-undo");
+  var heroDoneKey = "punchlist-hero-done-" + new Date().toISOString().slice(0, 10);
 
   // Timer logs against the hero's current pick (data-driven, not hardcoded).
   var heroTitle = (RENDER_DATA.hero && RENDER_DATA.hero.title) || "Tonight's 1000";
@@ -1458,6 +1573,7 @@
     remaining = TOTAL;
     render();
     startedAt = new Date();
+    hero.classList.remove("done");
     hero.classList.add("timer-active");
     timerBanner.classList.remove("show");
     intervalId = setInterval(function () {
@@ -1474,16 +1590,28 @@
     timerDisplay.textContent = "Done.";
     timerBanner.classList.add("show");
     logCompletion(heroTitle, heroPillar);
-    // Copy a paste-ready sync command for Claude Code
-    var stamp = new Date().toISOString();
-    var cmd = '/1000seconds log "' + heroTitle + '" --pillar=' + heroPillar + ' --completed_at=' + stamp;
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(cmd);
-    }
+    // The page can't write your real log -- copy a ready-to-paste line for the agent instead.
+    copyConfirmation(heroTitle, heroPillar);
+    // Settle into a persistent done state instead of snapping back to the default CTA.
     setTimeout(function () {
-      hero.classList.remove("timer-active");
       timerBanner.classList.remove("show");
-    }, 5000);
+      markHeroDone();
+    }, 1200);
+  }
+  function showHeroDone(info) {
+    if (heroDoneTitle) heroDoneTitle.textContent = (info && info.title) || heroTitle;
+    if (heroDoneTime) heroDoneTime.textContent = info && info.time ? " at " + info.time : "";
+    hero.classList.remove("timer-active");
+    hero.classList.add("done");
+  }
+  function markHeroDone() {
+    var info = { title: heroTitle, pillar: heroPillar, time: clockTime(), completed_at: new Date().toISOString() };
+    try { localStorage.setItem(heroDoneKey, JSON.stringify(info)); } catch (e) {}
+    showHeroDone(info);
+  }
+  function clearHeroDone() {
+    try { localStorage.removeItem(heroDoneKey); } catch (e) {}
+    hero.classList.remove("done");
   }
   function cancelTimer() {
     clearInterval(intervalId);
@@ -1510,6 +1638,20 @@
   if (swapBtn) swapBtn.addEventListener("click", function () {
     document.getElementById("today-radar").scrollIntoView({ behavior: "smooth", block: "start" });
   });
+  if (heroUndoBtn) heroUndoBtn.addEventListener("click", clearHeroDone);
+  if (heroCopyAgainBtn) heroCopyAgainBtn.addEventListener("click", function () {
+    var again = copyConfirmation(heroTitle, heroPillar);
+    showToast(again.ok
+      ? "Copied again. Paste into Claude or ChatGPT to log it."
+      : "Paste this into Claude or ChatGPT to log it: " + again.line);
+  });
+
+  // Restore a persisted hero-done state on load (per day), like the checkboxes.
+  (function restoreHeroDone() {
+    var raw = null;
+    try { raw = localStorage.getItem(heroDoneKey); } catch (e) {}
+    if (raw) { try { showHeroDone(JSON.parse(raw)); } catch (e) {} }
+  })();
 
   // Promote buttons
   document.querySelectorAll(".item-promote").forEach(function (btn) {
