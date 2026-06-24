@@ -44,8 +44,8 @@ Plus the Daily Punchlist (the engine that feeds Protocol 1) and seven slash comm
 
 | Command | When | What |
 |---|---|---|
-| `/1000seconds` | Daily | Show today's punchlist. Either start your 16:40 on the top item (or override), or just peek and exit. |
-| `/render` | Ad-hoc | Open today's punchlist as a web page -- in-browser 16:40 timer, checkboxes, and a Log tab of your evidence |
+| `/1000seconds` | Daily | Show today's punchlist and auto-open the web view. Either start your 16:40 on the top item (or override), or just peek and exit. |
+| `/render` | Ad-hoc | Refresh the web view on demand (`/1000seconds` opens it for you) -- in-browser 16:40 timer, checkboxes, and a Log tab of your evidence. Checking an item copies a line to paste back to your agent, which keeps the real log |
 | `/friday` | Weekly | One ritual: matrix → kills → next week's commitment → witness message draft |
 | `/brief` | Ad-hoc | Walk through the 5-part Agent Brief, paste-ready |
 | `/pursuit-check` | When the data warrants | Read your logs, surface the graduation signal |
