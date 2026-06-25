@@ -45,7 +45,7 @@ Plus the Daily Punchlist (the engine that feeds Protocol 1) and seven slash comm
 | Command | When | What |
 |---|---|---|
 | `/1000seconds` | Daily | Show today's punchlist and auto-open the web view. Either start your 16:40 on the top item (or override), or just peek and exit. |
-| `/render` | Ad-hoc | Refresh the web view on demand (`/1000seconds` opens it for you) -- in-browser 16:40 timer, checkboxes, and a Log tab of your evidence. Checking an item copies a line to paste back to your agent, which keeps the real log |
+| `/render` | Ad-hoc | Refresh the web view on demand (`/1000seconds` opens it for you) -- in-browser 16:40 timer, checkboxes, a Log tab of your evidence, and a Health tab (Oura recovery + Strava training). Checking an item copies a line to paste back to your agent, which keeps the real log |
 | `/friday` | Weekly | One ritual: matrix → kills → next week's commitment → witness message draft |
 | `/brief` | Ad-hoc | Walk through the 5-part Agent Brief, paste-ready |
 | `/pursuit-check` | When the data warrants | Read your logs, surface the graduation signal |
@@ -63,6 +63,7 @@ The system reads from data sources you already use. Each one is opt-in during in
 | Google / Apple / Outlook Calendar | Mental + Emotional items; placed slot collision check |
 | Slack | Mental items (@-mentions, DM debt, parked threads) |
 | Granola or other meeting transcripts | Mental items (unresolved decisions, action items) |
+| Oura | Physical items (readiness, sleep, HRV -- load vs. recovery) |
 | Strava / Apple Health / Garmin | Physical items (gaps, recovery flags) |
 | Family or personal calendar | Emotional items (relational commitments, missed presence) |
 | Linear / Notion / GitHub / Asana | Backlog items for the weekly matrix |
