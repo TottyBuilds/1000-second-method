@@ -2,6 +2,23 @@
 
 All notable changes to The 1000 Second Method installer.
 
+## v2.4.0 -- 2026-06-24
+
+The health release. Oura and Strava become first-class Physical-pillar sources, and the recommendation engine starts choosing load vs. recovery from real data.
+
+What changes:
+- **Oura + Strava are first-class sources.** No MCP exists for either, so the agent reads their REST APIs directly with your own credentials, stored locally in the gitignored `system/health/`. Nothing routes through a server I control. `/sources` walks the one-time setup (Oura token; Strava developer-app + OAuth) and can test or remove them.
+- **The Physical pillar now reads recovery.** The engine reads a normalized `system/health/health-data.json` and applies recovery rules: low readiness or poor sleep demotes hard training and promotes mobility; 2+ days since a workout promotes movement; a workout already logged today stops it double-pushing. If neither source is connected, nothing changes.
+- **New Health tab on the render.** Beside Today and Log: today's readiness, sleep, HRV, and resting HR with green/amber/red status, two-week trend sparklines (inline SVG, no chart libraries), recent Strava training, and a one-line "how this shaped tonight's Physical pick." Read-only.
+- **One small script.** `system/health/strava_token.py` (stdlib only) handles the Strava 6-hour token refresh and rotation. Everything else (Oura GETs, Strava GETs, normalization) is agent-inline.
+
+What stays the same:
+- Five protocols. Same names. Same IP.
+- The single-file, paste-one-URL install. No backend, no account -- your health data and credentials live in your workspace.
+- Voice rules. Sources sovereign. Free, MIT.
+
+Breaking: nothing. v2.3.x installs run `/1000s-update` to pick up the health integration, then `/sources` to connect Oura or Strava. Operators who connect nothing see no change. Logs and `OPERATOR.md` preserved.
+
 ## v2.3.0 -- 2026-06-24
 
 The honest-render release. The web view stops pretending it tracks anything on its own, and it shows up without being asked.

@@ -818,6 +818,79 @@
   .timeline-title { color: var(--text); font-size: 15px; font-weight: 500; margin: 0 0 4px; }
   .timeline-detail { color: var(--text-soft); font-size: 13px; margin: 0; }
 
+  /* ============================================================
+     HEALTH VIEW -- Oura recovery + Strava training, informs Physical
+     ============================================================ */
+  .health-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 8px;
+  }
+  @media (max-width: 640px) { .health-grid { grid-template-columns: 1fr 1fr; } }
+  .metric-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+  }
+  .metric-card.good { border-color: rgba(155, 184, 111, 0.4); }
+  .metric-card.amber { border-color: rgba(232, 149, 74, 0.4); }
+  .metric-card.bad { border-color: rgba(200, 118, 118, 0.4); }
+  .metric-label {
+    color: var(--muted);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    margin: 0 0 10px;
+  }
+  .metric-value {
+    font-family: 'DM Serif Display', serif;
+    font-size: 30px;
+    line-height: 1;
+    color: var(--text);
+    margin: 0 0 6px;
+    font-variant-numeric: tabular-nums;
+  }
+  .metric-value.good { color: var(--physical); }
+  .metric-value.amber { color: var(--accent); }
+  .metric-value.bad { color: #c87676; }
+  .metric-value .unit {
+    font-family: 'Outfit', sans-serif;
+    font-size: 13px;
+    color: var(--muted);
+    margin-left: 3px;
+  }
+  .metric-sub { color: var(--text-soft); font-size: 11px; margin: 0; }
+
+  .trend-row {
+    display: grid;
+    grid-template-columns: 130px 1fr 52px;
+    gap: 16px;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .trend-row:last-child { border-bottom: none; }
+  .trend-name { color: var(--text-soft); font-size: 13px; }
+  .trend-now { text-align: right; font-size: 14px; color: var(--text); font-variant-numeric: tabular-nums; }
+  .sparkline { width: 100%; height: 32px; display: block; }
+  .sparkline polyline { fill: none; stroke: var(--physical); stroke-width: 2; vector-effect: non-scaling-stroke; }
+
+  .workout-row {
+    display: grid;
+    grid-template-columns: 110px 1fr auto;
+    gap: 14px;
+    align-items: baseline;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+  }
+  .workout-row:last-child { border-bottom: none; }
+  .workout-date { color: var(--muted); font-size: 12px; }
+  .workout-type { color: var(--text); font-weight: 500; }
+  .workout-stat { color: var(--text-soft); text-align: right; }
+
   /* Toast */
   #toast {
     position: fixed;
@@ -848,6 +921,7 @@
   <div class="tabs">
     <button class="tab active" data-view="today">Today</button>
     <button class="tab" data-view="done">Log</button>
+    <button class="tab" data-view="health">Health</button>
   </div>
 
   <!-- =================== TODAY VIEW =================== -->
@@ -1062,6 +1136,53 @@
 
   </div>
 
+  <!-- =================== HEALTH VIEW =================== -->
+  <div class="view" data-view="health">
+
+    <div class="meta">Physical pillar · recovery + training</div>
+    <h1>How your body is doing.</h1>
+    <p class="lede">
+      What Oura and Strava are telling the system, and how it shaped tonight's Physical pick. The system reads this to choose between load and recovery.
+    </p>
+
+    <!-- How this shaped tonight -->
+    <div class="companion-note" id="health-shaped"></div>
+
+    <!-- RECOVERY SNAPSHOT -->
+    <div class="section">
+      <div class="section-head">
+        <p class="section-eyebrow">Today</p>
+        <h2 class="section-title">Recovery snapshot</h2>
+      </div>
+      <div class="health-grid" id="health-metrics"></div>
+    </div>
+
+    <!-- TRENDS -->
+    <div class="section">
+      <div class="section-head">
+        <p class="section-eyebrow">Last two weeks</p>
+        <h2 class="section-title">Trends</h2>
+      </div>
+      <div id="health-trends"></div>
+    </div>
+
+    <!-- TRAINING -->
+    <div class="section">
+      <div class="section-head">
+        <p class="section-eyebrow">Strava</p>
+        <h2 class="section-title">Recent training</h2>
+        <p class="section-prose" id="health-since"></p>
+      </div>
+      <div id="health-workouts"></div>
+    </div>
+
+    <!-- DISCONNECTED HINT -->
+    <div class="section" id="health-disconnected" style="display:none;">
+      <p class="section-prose">No health sources connected yet. Run <code>/sources</code> to connect Oura or Strava, and the Physical pillar starts using your recovery and training data.</p>
+    </div>
+
+  </div>
+
 </div>
 
 <div id="toast">Done.</div>
@@ -1156,6 +1277,44 @@
         { date: "Tue Jun 2", pillar: "Emotional", time: "19:30 → 19:46:40", title: "Real conversation with Anna about the summer schedule", why: "Brought up from on-hold list. The conversation you'd been parking for 6 weeks." }
       ]
     },
+    // Health: Oura recovery + Strava training. Mirrors system/health/health-data.json.
+    health: {
+      shapedNote: "Readiness is amber (64) and HRV dipped to 38ms after yesterday's run. Tonight's Physical pick is mobility, not load.",
+      oura: {
+        connected: true,
+        status: "fresh",
+        today: { readiness: 64, sleep_score: 71, hrv_ms: 38, resting_hr: 58, sleep_hours: 6.4 },
+        trend: [
+          { date: "5/27", readiness: 78, sleep_score: 80, hrv_ms: 52 },
+          { date: "5/28", readiness: 72, sleep_score: 74, hrv_ms: 47 },
+          { date: "5/29", readiness: 80, sleep_score: 82, hrv_ms: 55 },
+          { date: "5/30", readiness: 83, sleep_score: 79, hrv_ms: 58 },
+          { date: "5/31", readiness: 75, sleep_score: 71, hrv_ms: 49 },
+          { date: "6/1", readiness: 70, sleep_score: 73, hrv_ms: 45 },
+          { date: "6/2", readiness: 68, sleep_score: 69, hrv_ms: 43 },
+          { date: "6/3", readiness: 74, sleep_score: 76, hrv_ms: 50 },
+          { date: "6/4", readiness: 81, sleep_score: 84, hrv_ms: 60 },
+          { date: "6/5", readiness: 77, sleep_score: 78, hrv_ms: 54 },
+          { date: "6/6", readiness: 66, sleep_score: 67, hrv_ms: 41 },
+          { date: "6/7", readiness: 70, sleep_score: 72, hrv_ms: 46 },
+          { date: "6/8", readiness: 62, sleep_score: 65, hrv_ms: 36 },
+          { date: "6/9", readiness: 64, sleep_score: 71, hrv_ms: 38 }
+        ]
+      },
+      strava: {
+        connected: true,
+        status: "fresh",
+        days_since_workout: 1,
+        last_workout: { date: "6/8", type: "Run", distance_km: 8.1, moving_min: 44, load: 78 },
+        trend: [
+          { date: "5/28", type: "Run", distance_km: 5.0, moving_min: 27, load: 38 },
+          { date: "5/31", type: "Ride", distance_km: 24.3, moving_min: 61, load: 55 },
+          { date: "6/3", type: "Run", distance_km: 3.2, moving_min: 18, load: 22 },
+          { date: "6/5", type: "Strength", distance_km: null, moving_min: 35, load: 30 },
+          { date: "6/8", type: "Run", distance_km: 8.1, moving_min: 44, load: 78 }
+        ]
+      }
+    },
     ctaUrl: "https://everyexpert.com/totty"
   };
   /* RENDER_DATA:END */
@@ -1182,6 +1341,22 @@
   function setHTML(id, html) {
     var node = document.getElementById(id);
     if (node) node.innerHTML = html == null ? "" : html;
+  }
+
+  // Tiny inline-SVG sparkline from an array of numbers. No chart library.
+  function sparkline(values) {
+    if (!values || !values.length) return "";
+    var w = 100, h = 32, pad = 3;
+    var min = Math.min.apply(null, values), max = Math.max.apply(null, values);
+    var range = (max - min) || 1;
+    var span = values.length > 1 ? values.length - 1 : 1;
+    var pts = values.map(function (v, i) {
+      var x = pad + (i * (w - 2 * pad)) / span;
+      var y = pad + (h - 2 * pad) * (1 - (v - min) / range);
+      return x.toFixed(1) + "," + y.toFixed(1);
+    }).join(" ");
+    return '<svg class="sparkline" viewBox="0 0 ' + w + ' ' + h + '" preserveAspectRatio="none">' +
+           '<polyline points="' + pts + '"/></svg>';
   }
 
   // Build one .item-row carrying every class/attribute the handlers query.
@@ -1415,6 +1590,94 @@
         timeline.appendChild(dayEl);
       });
     }
+
+    // ============ HEALTH TAB ============
+    var health = data.health || {};
+    var oura = health.oura || {};
+    var strava = health.strava || {};
+    var hConnected = oura.connected || strava.connected;
+
+    var hDisc = document.getElementById("health-disconnected");
+    if (hDisc) hDisc.style.display = hConnected ? "none" : "block";
+
+    var shapedEl = document.getElementById("health-shaped");
+    if (shapedEl) {
+      shapedEl.style.display = health.shapedNote ? "flex" : "none";
+      shapedEl.innerHTML = health.shapedNote ? "<span>" + esc(health.shapedNote) + "</span>" : "";
+    }
+
+    // Recovery snapshot cards. Oura scores are 0-100; >=85 good, >=70 ok, <70 amber, <60 bad.
+    function scoreClass(v) {
+      if (v == null) return "";
+      return v >= 85 ? "good" : v >= 70 ? "" : v >= 60 ? "amber" : "bad";
+    }
+    var metrics = document.getElementById("health-metrics");
+    var t = oura.today || {};
+    if (metrics) {
+      metrics.innerHTML = "";
+      [
+        { label: "Readiness", value: t.readiness, unit: "", cls: scoreClass(t.readiness), sub: "Oura" },
+        { label: "Sleep", value: t.sleep_score, unit: "", cls: scoreClass(t.sleep_score), sub: t.sleep_hours != null ? t.sleep_hours + " h in bed" : "Oura" },
+        { label: "HRV", value: t.hrv_ms, unit: "ms", cls: "", sub: "overnight avg" },
+        { label: "Resting HR", value: t.resting_hr, unit: "bpm", cls: "", sub: "overnight low" }
+      ].forEach(function (c) {
+        var card = el("div", "metric-card" + (c.cls ? " " + c.cls : ""));
+        card.innerHTML =
+          '<p class="metric-label">' + esc(c.label) + "</p>" +
+          '<p class="metric-value' + (c.cls ? " " + c.cls : "") + '">' +
+            (c.value != null ? esc(c.value) : "--") +
+            (c.unit ? '<span class="unit">' + esc(c.unit) + "</span>" : "") + "</p>" +
+          '<p class="metric-sub">' + esc(c.sub) + "</p>";
+        metrics.appendChild(card);
+      });
+    }
+
+    // Trend sparklines from the Oura trend series.
+    var trends = document.getElementById("health-trends");
+    var oTrend = oura.trend || [];
+    if (trends) {
+      trends.innerHTML = "";
+      [
+        { name: "Readiness", key: "readiness" },
+        { name: "Sleep score", key: "sleep_score" },
+        { name: "HRV (ms)", key: "hrv_ms" }
+      ].forEach(function (s) {
+        var vals = oTrend.map(function (d) { return d[s.key]; }).filter(function (v) { return v != null; });
+        if (!vals.length) return;
+        var row = el("div", "trend-row");
+        row.innerHTML =
+          '<span class="trend-name">' + esc(s.name) + "</span>" +
+          sparkline(vals) +
+          '<span class="trend-now">' + esc(vals[vals.length - 1]) + "</span>";
+        trends.appendChild(row);
+      });
+    }
+
+    // Recent training from Strava.
+    var since = document.getElementById("health-since");
+    if (since) {
+      var d = strava.days_since_workout;
+      since.textContent = d == null ? "" :
+        d === 0 ? "You trained today." :
+        d === 1 ? "1 day since your last workout." :
+        d + " days since your last workout.";
+    }
+    var workouts = document.getElementById("health-workouts");
+    if (workouts) {
+      workouts.innerHTML = "";
+      (strava.trend || []).slice().reverse().slice(0, 6).forEach(function (wk) {
+        var row = el("div", "workout-row");
+        var stat = [
+          wk.distance_km != null ? wk.distance_km + " km" : "",
+          wk.moving_min != null ? wk.moving_min + " min" : ""
+        ].filter(Boolean).join(" · ");
+        row.innerHTML =
+          '<span class="workout-date">' + esc(wk.date) + "</span>" +
+          '<span class="workout-type">' + esc(wk.type) + "</span>" +
+          '<span class="workout-stat">' + esc(stat) + "</span>";
+        workouts.appendChild(row);
+      });
+    }
   }
 
   // Build the DOM from data BEFORE attaching interactive handlers so they bind to generated nodes.
@@ -1431,9 +1694,11 @@
       window.location.hash = name;
     });
   });
-  // Restore tab from hash
-  if (window.location.hash === "#done") {
-    document.querySelector('.tab[data-view="done"]').click();
+  // Restore tab from hash (today / done / health)
+  var hashView = (window.location.hash || "").replace("#", "");
+  if (hashView) {
+    var hashTab = document.querySelector('.tab[data-view="' + hashView + '"]');
+    if (hashTab) hashTab.click();
   }
 
   // ============ SOURCES PANEL COLLAPSE ============

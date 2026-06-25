@@ -1,4 +1,4 @@
-# The 1000 Second Method -- Installer (v2.3.0)
+# The 1000 Second Method -- Installer (v2.4.0)
 
 You are about to install the five protocols and the Daily Punchlist engine into the operator's workspace. This file is the wizard. The operator pasted a URL into Claude Code that points at this file, and now you are reading it.
 
@@ -12,9 +12,9 @@ Follow this file exactly. Do not improvise. The output quality of the install is
 
 Every count, name, version, and URL in this installer derives from this block. If prose anywhere below disagrees with it, this block wins and the prose is the bug.
 
-- **Version:** 2.3.0
+- **Version:** 2.4.0
 - **Raw repo base:** `https://raw.githubusercontent.com/TottyBuilds/1000-second-method/main`
-- **Generated files:** ~18 into `1000-second-system/` (the seeded brief can be skipped, so the honest count is "about 18")
+- **Generated files:** ~18 into `1000-second-system/` (the seeded brief can be skipped, so the honest count is "about 18"), plus `system/health/` files when the operator connects Oura or Strava
 - **Slash commands, always installed:** 7 -- `/1000seconds`, `/friday`, `/brief`, `/pursuit-check`, `/1000s-update`, `/sources`, `/render`
 - **Conditional command:** `/routines` -- installed only if the operator opts into cloud routines in Phase 4
 - **Protocol display names:** (1) The Daily 1000 · (2) The Leverage Matrix · (3) The Agent Brief · (4) The Weekly Kill List · (5) The Public Commitment Slot
@@ -146,7 +146,7 @@ Wait for an explicit choice. Default to option 2 if the operator hesitates. Then
 1. **Calendar** (Google, Apple, Outlook) -- feeds Mental and Emotional items, plus your placed-slot collision check. Highest-value single source. Strongly recommend connecting this one even on a minimal path.
 2. **Work messaging** (Slack, less commonly MS Teams) -- feeds Mental items: @-mentions you have not responded to, DM debt, parked threads.
 3. **Meeting transcripts** (Granola, Fathom, Otter, Notion AI, Apple Notes-from-meeting) -- feeds Mental items: unresolved decisions, action items assigned to you.
-4. **Physical tracking** (Strava, Apple Health, Garmin, Whoop) -- feeds Physical items: movement gaps, recovery flags.
+4. **Physical tracking** (Oura, Strava, Apple Health, Garmin, Whoop) -- feeds Physical items: movement gaps, recovery flags. Oura and Strava are first-class as of v2.4.0: the agent reads their APIs directly with the operator's own credentials (no MCP, nothing routes through a server we control) and the engine uses recovery + training to choose between load and recovery. See the `/sources` health setup and `system/health/`.
 5. **Family / personal calendar** (often a separate shared calendar) -- feeds Emotional items: relational commitments, missed presence.
 6. **Backlog tools** (Linear, Notion, GitHub, Asana, Things, Todoist) -- feeds the weekly leverage matrix.
 
@@ -222,7 +222,7 @@ This is the operator's personal Claude context. Every slash command reads this f
 ```markdown
 # Operator: [NAME]
 
-Personal context for The 1000 Second Method, installed [DATE]. Installer version 2.3.0.
+Personal context for The 1000 Second Method, installed [DATE]. Installer version 2.4.0.
 
 ## Life shape
 
@@ -287,7 +287,7 @@ A short orientation for the operator. Not the same as the repo README. This is t
 ```markdown
 # Your 1000 Second System
 
-Installed [DATE]. Version 2.3.0.
+Installed [DATE]. Version 2.4.0.
 
 ## What's here
 
@@ -340,7 +340,7 @@ Read ALL of the following, in this order:
    - Calendar: today's meetings, declined invites, blocks
    - Work messaging: @-mentions awaiting response, DM debt, threads parked
    - Meeting transcripts: action items assigned to operator, unresolved decisions
-   - Physical tracking: last workout, recovery flags, movement gaps
+   - Physical tracking: read `system/health/health-data.json` (the normalized Oura + Strava cache -- today's readiness, sleep score, HRV, resting HR, plus days-since-workout and recent training). Refresh it first via the Health fetch procedure below. If the file is absent or both sources are disconnected, skip the Physical recovery rules; nothing else changes.
    - Family/personal calendar: relational commitments, missed presence
    - Backlog tools: open items assigned to operator
 
@@ -353,6 +353,26 @@ Read ALL of the following, in this order:
 
 **Operator's stated goals:**
 8. `pursuits-parking-lot.md` -- their parked hard outcomes. Each parked outcome includes "what done looks like" and "why it matters."
+
+## Health fetch (Oura + Strava)
+
+Only if `system/sources.md` lists Oura or Strava as connected. This refreshes `system/health/health-data.json`, the single cache the Physical recovery rules read. Read credentials from `system/health/credentials.json`. On any failure, keep the last good cache, set that source's `status` to `error`, and continue -- never block the punchlist.
+
+1. **Strava:** run `python3 system/health/strava_token.py system/health/credentials.json` to get a valid access token (it refreshes the 6-hour token and persists rotation). Then `GET https://www.strava.com/api/v3/athlete/activities?after=<30d-ago-epoch>&per_page=50` with `Authorization: Bearer <token>`. If `python3` is unavailable, do the refresh inline: `POST https://www.strava.com/oauth/token` with `client_id`, `client_secret`, `grant_type=refresh_token`, `refresh_token`, persist the new tokens, then the same GET.
+2. **Oura:** with the stored bearer token, `GET https://api.ouraring.com/v2/usercollection/daily_readiness`, `daily_sleep`, and `sleep` for the last 30 days (`start_date`/`end_date` params).
+3. **Normalize** into `system/health/health-data.json` using this shape (omit a source's block and set `connected:false` if it is not connected):
+
+   ```json
+   {
+     "fetched_at": "ISO",
+     "oura": { "connected": true, "status": "fresh",
+       "today": { "readiness": 0, "sleep_score": 0, "hrv_ms": 0, "resting_hr": 0, "sleep_hours": 0 },
+       "trend": [ { "date": "M/D", "readiness": 0, "sleep_score": 0, "hrv_ms": 0 } ] },
+     "strava": { "connected": true, "status": "fresh", "days_since_workout": 0,
+       "last_workout": { "date": "M/D", "type": "Run", "distance_km": 0, "moving_min": 0, "load": 0 },
+       "trend": [ { "date": "M/D", "type": "Run", "distance_km": 0, "moving_min": 0, "load": 0 } ] }
+   }
+   ```
 
 ## Your job
 
@@ -390,6 +410,16 @@ Read ALL of the following, in this order:
 10. **Stale-state recovery.** If `PUNCHLIST.md`'s last-modified date is >48 hours old (operator skipped 2+ days), lead the new output with a brief catching-up line above the floor: "You missed 3 days. Re-ranking from sources, dropping anything that timed out." Do not show yesterday's queue verbatim. Treat the gap as data: parked outcomes get a small boost (the time off may have surfaced one), and slot adherence reset starts today.
 
 11. **Unsent draft surface.** If `bundles/witness-this-week.md` exists, was last modified >48 hours ago, and no entry in `log/commitments.md` from the same week marks it sent, add a one-line note in the punchlist output's footer: "Witness draft sat unsent since [date]. Send via `/friday` or kill it." Surface once per day until resolved.
+
+## Physical recovery rules (Oura + Strava)
+
+Apply these during stack-ranking (step 5) and default promotion (step 6) whenever `system/health/health-data.json` has a connected source. Thresholds are defaults; the operator can tune them in `OPERATOR.md`.
+
+- **Recovery gate.** If Oura `readiness < 70` OR `sleep_score < 70`: demote hard-training Physical candidates (intense runs, heavy lifts, intervals) and promote mobility/recovery/walk candidates instead. Add one line to the Physical section: "Recovery amber: readiness [N]. Suggesting mobility over load tonight." If `readiness < 60`, state it plainly and prefer rest/mobility as the Physical default.
+- **Movement gap.** If Strava `days_since_workout >= 2` AND readiness is not amber/red, promote a movement or strength 1000 into the Physical slot. The longer the gap, the higher the promotion.
+- **No double-count.** If Strava `last_workout.date` is today, do not also push a hard Physical 1000. Acknowledge it ("You already trained today -- Physical is covered") and let another pillar lead the suggested default.
+- **Coverage.** Count a logged workout toward the 7-day Physical coverage indicator.
+- **Graceful absence.** If neither source is connected, or both are `status:error`, skip all of the above and rank Physical exactly as before. These rules only ever add signal; they never block.
 
 ## Guardrails
 
@@ -498,6 +528,26 @@ Edit by hand if you know what you're doing, or use `/sources` to manage interact
 - **Read window:** last 48 hours (configurable)
 - **Last successful read:** [TIMESTAMP -- updated by the engine]
 - **Notes:** [anything specific the engine should know about this source -- e.g., "ignore events tagged with 'personal' for the Mental punchlist, surface them under Emotional instead"]
+
+[IF OURA CONNECTED:]
+
+### Oura
+
+- **Pillar(s) informed:** Physical
+- **Connection method:** Oura API v2 bearer token (no MCP). Token in `system/health/credentials.json`. Data cached in `system/health/health-data.json`.
+- **Read window:** last 30 days
+- **Last successful read:** [TIMESTAMP -- updated by the Health fetch]
+- **Notes:** feeds the engine's recovery gate (readiness, sleep score, HRV, resting HR).
+
+[IF STRAVA CONNECTED:]
+
+### Strava
+
+- **Pillar(s) informed:** Physical
+- **Connection method:** Strava OAuth2 (no MCP). `client_id`/`client_secret`/`refresh_token` in `system/health/credentials.json`; `system/health/strava_token.py` mints access tokens. Data cached in `system/health/health-data.json`.
+- **Read window:** last 30 days
+- **Last successful read:** [TIMESTAMP -- updated by the Health fetch]
+- **Notes:** feeds the engine's movement-gap and no-double-count rules.
 
 ## Skipped (at install)
 
@@ -1029,10 +1079,11 @@ If `PUNCHLIST.md` is empty or older than 12 hours OR the last sweep was more tha
 - Surface slot-adherence flag if the placed slot held ≤2/5 last week
 - Surface stale-state lead line if the operator skipped 2+ days
 - Surface unsent witness draft note if applicable
+- Refresh `system/health/health-data.json` and apply the Physical recovery rules (recovery gate, movement gap, no double-count) if Oura or Strava are connected
 
 Then:
 1. Print the full punchlist to the terminal. The suggested default is already highlighted at the top. If a stale-state line, slot-adherence flag, or unsent-draft note is present, they appear in their designated positions (lead-line, footer, footer).
-2. Render the visual companion view, in addition to the terminal output. Follow the render procedure in `.claude/commands/render.md` (fetch the template, build a `RENDER_DATA` object from the punchlist you just produced, replace the `RENDER_DATA` block, write `1000-second-system/today.html`), then open it in the operator's browser. This is why the operator no longer needs to run `/render` separately. If you are running headless (a cloud routine, or no display is available), write the file but skip opening it, and never block the rest of the command on the render. The page is a companion view only: checking an item or finishing the in-page timer copies a ready-to-paste line for the operator to drop back into you (or ChatGPT) so the 1000 is recorded for real. The page never writes `log/sweeps.md` itself.
+2. Render the visual companion view, in addition to the terminal output. Follow the render procedure in `.claude/commands/render.md` (fetch the template, build a `RENDER_DATA` object from the punchlist you just produced, replace the `RENDER_DATA` block, write `1000-second-system/today.html`), then open it in the operator's browser. This is why the operator no longer needs to run `/render` separately. If you are running headless (a cloud routine, or no display is available), write the file but skip opening it, and never block the rest of the command on the render. The page is a companion view only: checking an item or finishing the in-page timer copies a ready-to-paste line for the operator to drop back into you (or ChatGPT) so the 1000 is recorded for real. The page never writes `log/sweeps.md` itself. Build the `health` block of `RENDER_DATA` from `system/health/health-data.json` so the Health tab shows current recovery and training; if Oura/Strava are connected and you did not just regenerate, run the Health fetch first so the cache is fresh.
 3. Prompt the operator: "Start now? [enter: begin 16:40 on the suggested default · number: override with another item · line: write your own · q: just looking]"
 4. Branch on the response:
    - **Enter or number or custom line:** Start the timer.
@@ -1194,6 +1245,25 @@ Allow the operator to:
 - Test a source (run a quick read to verify the connection still works)
 - Reorder source priority (the read order in `sources.md`)
 
+## Health sources: Oura and Strava
+
+These two have no MCP, so they connect via the operator's own API credentials, stored locally in `1000-second-system/system/health/credentials.json`. That folder is inside the gitignored install directory: the credentials never leave the machine and are never committed. Create `system/health/` if it does not exist.
+
+**Connect Oura:**
+1. Send the operator to `https://cloud.ouraring.com/` to create an API token (Personal Access Token if their account offers one; otherwise a Personal OAuth app with scopes `daily`, `heartrate`, `workout`, `personal`). Confirm the current method against `https://cloud.ouraring.com/docs/authentication`.
+2. Capture the token and write it to `credentials.json` under `oura.access_token` (add `client_id`/`client_secret`/`refresh_token`/`access_token_expires_at` too if their token is OAuth and refreshes).
+3. Add the Oura entry to `system/sources.md`. Run a test read.
+
+**Connect Strava:**
+1. Send the operator to `https://www.strava.com/settings/api` to register an API application. Capture `client_id` and `client_secret`.
+2. Open the authorize URL (`https://www.strava.com/oauth/authorize?client_id=<id>&response_type=code&redirect_uri=http://localhost&approval_prompt=force&scope=activity:read_all`), have them approve, and capture the `code` from the redirect URL.
+3. Exchange it once: `POST https://www.strava.com/oauth/token` with `client_id`, `client_secret`, `code`, `grant_type=authorization_code`. Store `refresh_token` (and `access_token`/`expires_at`) in `credentials.json` under `strava`.
+4. Fetch the refresh helper into the install: write `system/health/strava_token.py` from `https://raw.githubusercontent.com/TottyBuilds/1000-second-method/main/docs/strava_token.py`. Add the Strava entry to `system/sources.md`. Run a test read.
+
+**Test (Oura/Strava):** run the Health fetch procedure from `system/punchlist-engine.md` once and report each source's resulting `status` (fresh/error) and a one-line sample (today's readiness; days since last workout).
+
+**Remove (Oura/Strava):** delete that source's block from `credentials.json` and its entry from `sources.md`. Do not revoke the app on Oura/Strava's side -- tell the operator they can do that in the provider's settings.
+
 After changes, write the updated config back to `system/sources.md` and tell the operator what changed.
 
 Voice: Brent's.
@@ -1232,6 +1302,10 @@ Build a `RENDER_DATA` object from the operator's real data using this shape (use
       deferred: [ { id: "<slug>", pillar: "...", title: "...", note: "from your parking lot", source: "pursuits-parking-lot.md" } ],
       skips: [ "<filtered or killed-category item>" ],
       log: { streakDays: 0, count30: 0, pillarSplit: { physical: 0, mental: 0, emotional: 0 }, calendar: [ { date: "2026-05-19", pillar: "Mental"|null } ], timeline: [ { date: "Jun 13", pillar: "...", title: "...", why: "..." } ] },
+      // health: omit entirely if neither Oura nor Strava is connected (the Health tab shows a connect hint). Otherwise copy from system/health/health-data.json:
+      health: { shapedNote: "<how recovery shaped tonight's Physical pick>",
+                oura: { connected: true, status: "fresh", today: { readiness: 0, sleep_score: 0, hrv_ms: 0, resting_hr: 0, sleep_hours: 0 }, trend: [ { date: "M/D", readiness: 0, sleep_score: 0, hrv_ms: 0 } ] },
+                strava: { connected: true, status: "fresh", days_since_workout: 0, last_workout: { date: "M/D", type: "Run", distance_km: 0, moving_min: 0, load: 0 }, trend: [ { date: "M/D", type: "Run", distance_km: 0, moving_min: 0, load: 0 } ] } },
       ctaUrl: "https://everyexpert.com/totty"
     }
 
@@ -1356,7 +1430,7 @@ Voice: Brent's.
 
 ## Phase 5: Closing
 
-Write `1000-second-system/.installed-version` containing just `2.3.0`.
+Write `1000-second-system/.installed-version` containing just `2.4.0`.
 
 Then close with this message to the operator (in Brent's voice, no em dashes, paraphrase but match the shape):
 
@@ -1416,7 +1490,7 @@ Before the Phase 5 closing message, verify the install you just wrote. This is t
    Portable check: `grep -rn "$(printf '\342\200\224')" 1000-second-system .claude/commands` (the `printf` emits the em dash byte sequence, so this installer file stays clean) -> expect no matches.
 2. **No leftover tokens.** No finished file still contains a `[BRACKET PLACEHOLDER]` you forgot to fill, an unresolved `[IF ...]` conditional, or a `{{...}}` token.
    `grep -rnE "\[[A-Z][A-Z _/-]+\]|\[IF |\{\{" 1000-second-system` -> expect no matches in finished prose.
-3. **Version stamps agree.** `.installed-version`, the `OPERATOR.md` header, and the operator `README.md` all show the Manifest Version (2.3.0). They must match.
+3. **Version stamps agree.** `.installed-version`, the `OPERATOR.md` header, and the operator `README.md` all show the Manifest Version (2.4.0). They must match.
 4. **The expected set exists.** Seven command files in `.claude/commands/` (`1000seconds`, `friday`, `brief`, `pursuit-check`, `1000s-update`, `sources`, `render`), plus `routines` only if the operator enabled cloud routines. The core Phase 2 files exist. Every command file has YAML frontmatter with a `description`.
 
 If any check fails, fix it before you close. The operator never sees this checklist -- they just get a correct install.
