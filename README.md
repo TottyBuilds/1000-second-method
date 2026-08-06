@@ -8,7 +8,7 @@ You point Claude Code at the installer. It runs a 12-minute interview, connects 
 
 From then on, every morning, the system produces a Daily Punchlist: stack-ranked 1000-second actions across three pillars -- Physical, Mental, Emotional -- pulled from what is actually happening in your life. Your job collapses to picking one and running it.
 
-The floor is one 1000-second sweep a day. Anything beyond that is bonus.
+The floor is one wedge a day -- 1000 seconds on one thing. Anything beyond that is bonus.
 
 **v2.1.0:** the punchlist engine now learns from your own logs -- every override, every kill, every parked outcome you wrote down at install. Day 1 it generates from raw sources. By Day 7 it starts feeling specific. By Day 14 it should feel like yours. If it doesn't, file an issue.
 
@@ -30,13 +30,14 @@ Work does not get its own bucket. That choice is on purpose. The pillars are vis
 
 ## What you get
 
-The wizard installs five protocols into your workspace as files. Each one is the smallest thing that durably shifts a week:
+The wizard installs six protocols into your workspace as files. Each one is the smallest thing that durably shifts a week:
 
 1. **The Daily 1000** -- A daily 16:40 deep block on the punchlist's top item. (Renamed from "The 1000 Second Sweep" in v2.2.0 -- "sweep" implied clearing through things, but the protocol is the opposite: putting 1000 seconds onto one thing.)
 2. **The Leverage Matrix** -- A weekly 2x2 (now ingested from your sources, not pasted) that kills about 60% of most operators' backlogs the first run
 3. **The Agent Brief** -- A 5-part template for handing work to an LLM that turns 6/10 outputs into 8.5/10 outputs
 4. **The Weekly Kill List** -- A Friday 4pm log of what you stopped doing, and why
 5. **The Public Commitment Slot** -- A weekly witnessed commitment that lifts follow-through 15-25 percentage points
+6. **The 21** -- A weekly plan: about 21 wedges placed into the day's three windows (the morning cycle, the midday block, the turn down), scored by continuations, floor untouched
 
 Full descriptions in [`docs/PROTOCOLS.md`](docs/PROTOCOLS.md).
 
@@ -46,7 +47,7 @@ Plus the Daily Punchlist (the engine that feeds Protocol 1) and seven slash comm
 |---|---|---|
 | `/1000seconds` | Daily | Show today's punchlist and auto-open the web view. Either start your 16:40 on the top item (or override), or just peek and exit. |
 | `/render` | Ad-hoc | Refresh the web view on demand (`/1000seconds` opens it for you) -- in-browser 16:40 timer, checkboxes, a Log tab of your evidence, and a Health tab (Oura recovery + Strava training). Checking an item copies a line to paste back to your agent, which keeps the real log |
-| `/friday` | Weekly | One ritual: matrix → kills → next week's commitment → witness message draft |
+| `/friday` | Weekly | One ritual: matrix → kills → next week's 21 → commitment → witness draft |
 | `/brief` | Ad-hoc | Walk through the 5-part Agent Brief, paste-ready |
 | `/pursuit-check` | When the data warrants | Read your logs, surface the graduation signal |
 | `/1000s-update` | When the newsletter ships one | Pull installer improvements (preserves your local edits) |
@@ -113,7 +114,7 @@ None of these gate the installer. They are what's available when the data in you
 
 ## Versioning
 
-Semantic. Current version is in [`docs/CHANGELOG.md`](docs/CHANGELOG.md). The five protocols are stable IP -- they will not be renamed. Everything else evolves through the newsletter cadence.
+Semantic. Current version is in [`docs/CHANGELOG.md`](docs/CHANGELOG.md). The six protocols are stable IP -- they will not be renamed. Everything else evolves through the newsletter cadence.
 
 ## Feedback
 

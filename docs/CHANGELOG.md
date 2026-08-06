@@ -2,6 +2,24 @@
 
 All notable changes to The 1000 Second Method installer.
 
+## v2.5.0 -- 2026-08-05 (docs first; installer pass follows before release)
+
+The week release. The method gains its sixth protocol and the unit gets its true name.
+
+What changes:
+- **Protocol 6: The 21.** The weekly planning layer. Write the list -- about 21 wedges a week, three a day across the three pillars -- and place each one into the day's three windows: the morning cycle, the midday block, the turn down. Bookends carry a runway; midday runs capped. Runs inside `/friday`, between the kills and the commitment. Scored by continuations (did you continue on, or stop at the timer), never minutes, never streaks.
+- **The unit is a wedge, not a block.** A block caps time; a wedge solves starting. The Daily 1000 keeps its name -- what you put down each day is one wedge, placed where a runway lives when the slot has one. Vocabulary updated across README, PRINCIPLES, and PROTOCOLS.
+- **`/friday` grows one move:** matrix -> kills -> place next week's 21 -> commitment -> witness draft.
+
+What stays the same:
+- The floor. One wedge a day, any pillar. Twenty-one is what a planned week looks like, not the price of admission.
+- The first five protocols, their names, their grades.
+- The single-file install, sources sovereignty, no nudging, free, MIT.
+
+Breaking: nothing. Existing installs pick up the new protocol file and the `/friday` step via `/1000s-update` once the installer pass lands.
+
+Remaining before this version tags: the INSTALL.md pass (manifest count, `protocols/06-the-21.md` generation, the windows-mapping interview step, `/friday` command update) and the render's weekly surface. This entry ships with the docs so the vocabulary lands in one review.
+
 ## v2.4.0 -- 2026-06-24
 
 The health release. Oura and Strava become first-class Physical-pillar sources, and the recommendation engine starts choosing load vs. recovery from real data.
