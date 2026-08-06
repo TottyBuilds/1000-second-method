@@ -1,4 +1,4 @@
-# The five protocols
+# The six protocols
 
 The full description of what gets installed. Read this if you want to understand what you're committing to before you run the wizard.
 
@@ -22,7 +22,7 @@ Same framing as Grit Collective. Every action the system surfaces lives in one o
 
 Work does not get a fourth bucket. It sits inside Mental. That choice is on purpose. If work had its own pillar, you would optimize the work and let the other two atrophy. You already know what that looks like.
 
-The pillars are the lens, not the gate. The floor stays one 1000-second sweep a day, any pillar. The system surfaces 7-day balance as ambient signal so you can see what you have been neglecting. It does not lecture you about it.
+The pillars are the lens, not the gate. The floor stays one wedge a day -- 1000 seconds on one thing -- any pillar. The system surfaces 7-day balance as ambient signal so you can see what you have been neglecting. It does not lecture you about it.
 
 ---
 
@@ -77,6 +77,8 @@ The system never invents context. If a pillar has nothing in it today AND the pa
 ## Protocol 1 -- The Daily 1000
 
 (Renamed in v2.2.0. Was "The 1000 Second Sweep" through v2.1.0. The word "sweep" implied clearing through things, which is the opposite of what the protocol does. You're not sweeping anything -- you're putting 1000 seconds onto one specific thing. The new name names the action plainly.)
+
+(v2.5.0 renames the unit itself: a wedge, not a block. A block caps time. A wedge exists to solve starting -- it can still end at 16:40, but you place it where a runway lives, so when the thing catches you keep going past the timer. The protocol name stays The Daily 1000; the thing you put down each day is one wedge. Where a slot has nothing behind it, you have a runway. Where it doesn't -- usually midday -- you run it as a capped block. The slot picks the tool.)
 
 ### The verb
 
@@ -254,6 +256,44 @@ If you've been holding the witness slot at 8/10+ for four weeks and you have a h
 
 ---
 
+## Protocol 6 -- The 21
+
+(New in v2.5.0. The protocols above decide what deserves your time and hold you to it. The 21 decides where in the week that time actually lives.)
+
+### The verb
+
+Once a week, you write the list and place it. About an hour a day of non-work life nets out to roughly 21 wedges a week -- three a day -- across the three pillars. You keep one running list of what you're trying to move, the bullet list you work from all week, and you place each wedge into one of the day's three windows:
+
+- **The morning cycle** -- before the house wakes up. A bookend. It usually has a runway.
+- **The midday block** -- a gap in the working day, if one survives. Usually no runway: squeeze it in, cap it, move on.
+- **The turn down** -- the hour after the kids are asleep and before you are. The other bookend, the other runway.
+
+The bookends are where the runway lives: nothing stacked behind them, so a wedge that catches can keep going. Midday is a block, and you make peace with the timer before you start it. The slot picks the tool.
+
+Then you put them on the actual calendar, and you move them freely. Moving a wedge is compliance, not failure. The floor does not move either: one wedge a day, any pillar. Twenty-one is what a planned week looks like, not the price of admission.
+
+### Why it works
+
+Gollwitzer's implementation-intentions research -- the same result behind The Daily 1000: "I will do X at Y time in Z place" produces a 2-3x increase in follow-through over vague intent. The 21 is that sentence written twenty-one times, with the windows as the Z. And the standing list kills the nightly blank page: when you pick tomorrow's wedge the night before, you pick from a list that already exists.
+
+The measurement is deliberately not minutes. At the end of a wedge, one question: did you continue on, or did it stop at the timer? Count continuations as a plain fraction of wedges run. A week where most wedges turned into runways is a week with real momentum in it. No streaks, no gamified totals. A wedge that grew from 1000 seconds to 3000 is not a high score; it is a continuation.
+
+### Where it lives
+
+- **File:** `protocols/06-the-21.md` -- personalized to your windows from the interview
+- **Command:** Run as part of `/friday` -- after the matrix ranks and the kills clear, you place next week's wedges before you commit to the witnessed one
+- **Log:** continuations recorded per wedge in `log/sweeps.md` (continued, or stopped at the timer)
+- **Schedule:** Weekly, in the same Friday sitting
+
+### How to grade yourself
+
+- **9/10:** List written weekly, wedges placed into real windows on a real calendar, moved without guilt, continuations counted honestly
+- **7/10:** List most weeks, placement loose, calendar drifts by midweek
+- **5/10:** List sporadic, windows ignored, minutes counted instead of continuations
+- **3/10:** No list. Running the week from memory and calling it flexibility
+
+---
+
 ## How the protocols fit together
 
 The protocols are not independent. They form a weekly cadence on top of the daily punchlist.
@@ -263,7 +303,7 @@ The protocols are not independent. They form a weekly cadence on top of the dail
 | Every morning (silent) | Punchlist regenerates from connected sources | Cloud routine, off if not opted in |
 | Any time, daily | `/1000seconds` -- shows the punchlist, optionally starts your 16:40 timer | Protocol 1 |
 | Ad-hoc when delegating | `/brief` | Protocol 3 |
-| Friday 4pm | `/friday` -- matrix → kills → next week's commitment → witness draft | Protocols 2 + 4 + 5 |
+| Friday 4pm | `/friday` -- matrix → kills → place next week's 21 → commitment → witness draft | Protocols 2 + 4 + 6 + 5 |
 | Saturday | Send the witness message | Protocol 5 |
 | Monthly or when data warrants | `/pursuit-check` -- read logs, surface graduation signal | Cross-protocol |
 

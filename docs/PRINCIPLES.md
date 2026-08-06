@@ -41,11 +41,11 @@ The 1000 Second Method does not tell you what to do with your life. It puts your
 
 ## Operating principles for the system itself
 
-**1. The five protocols are stable IP.**
-The Daily 1000 (renamed from "The 1000 Second Sweep" in v2.2.0), the Leverage Matrix, the Agent Brief, the Weekly Kill List, the Public Commitment Slot -- the CONCEPTS behind these protocols will not change. Names get sharpened when they're materially wrong, as happened with v2.2.0's rename of Protocol 1: "sweep" implied clearing through things, which is the opposite of putting 1000 seconds onto one thing. Renames will be rare and require a real reason. New protocols can be added in future versions.
+**1. The six protocols are stable IP.**
+The Daily 1000 (renamed from "The 1000 Second Sweep" in v2.2.0), the Leverage Matrix, the Agent Brief, the Weekly Kill List, the Public Commitment Slot, and The 21 (added in v2.5.0) -- the CONCEPTS behind these protocols will not change. Names get sharpened when they're materially wrong, as happened with v2.2.0's rename of Protocol 1: "sweep" implied clearing through things, which is the opposite of putting 1000 seconds onto one thing. Renames will be rare and require a real reason. New protocols can be added in future versions.
 
 **2. Three pillars, one floor.**
-Physical, Mental, Emotional. Same framing as Grit Collective. Work lives inside Mental. The pillars are visual organization, not a daily gate. Floor stays one 1000-second sweep a day, any pillar. Balance is surfaced over a 7-day window and never enforced day to day.
+Physical, Mental, Emotional. Same framing as Grit Collective. Work lives inside Mental. The pillars are visual organization, not a daily gate. Floor stays one wedge a day, any pillar. Balance is surfaced over a 7-day window and never enforced day to day.
 
 **3. Your data is sovereign.**
 `/1000s-update` will never overwrite `OPERATOR.md`, your logs, your parking lot, or any slash command you added yourself. Updates surface diffs and ask you what to do on conflict. Connected source data lives in your Claude session and on the third-party services you already use. None of it passes through any server I control.

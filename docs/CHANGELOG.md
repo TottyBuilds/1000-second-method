@@ -2,6 +2,26 @@
 
 All notable changes to The 1000 Second Method installer.
 
+## v2.5.0 -- 2026-08-05
+
+The week release. The method gains its sixth protocol and the unit gets its true name.
+
+What changes:
+- **Protocol 6: The 21.** The weekly planning layer. Write the list -- about 21 wedges a week, three a day across the three pillars -- and place each one into the day's three windows: the morning cycle, the midday block, the turn down. Bookends carry a runway; midday runs capped. Runs inside `/friday`, between the kills and the commitment. Scored by continuations (did you continue on, or stop at the timer), never minutes, never streaks.
+- **The unit is a wedge, not a block.** A block caps time; a wedge solves starting. The Daily 1000 keeps its name -- what you put down each day is one wedge, placed where a runway lives when the slot has one. Vocabulary updated across README, PRINCIPLES, and PROTOCOLS.
+- **`/friday` grows one move:** matrix -> kills -> place next week's 21 -> commitment -> witness draft.
+
+What stays the same:
+- The floor. One wedge a day, any pillar. Twenty-one is what a planned week looks like, not the price of admission.
+- The first five protocols, their names, their grades.
+- The single-file install, sources sovereignty, no nudging, free, MIT.
+
+Also in this release: the installer itself. Manifest at 2.5.0 and ~19 generated files, the windows-mapping step in the interview (morning cycle / midday block / the turn down, "most days: none" is a valid midday answer), `protocols/06-the-21.md` generated and personalized to the operator's windows, the continuation mark in the daily log, and `/friday` grown to five parts with the placement step writing `WEEK.md`.
+
+Breaking: nothing. Existing installs pick up the new protocol file, the Windows block in `OPERATOR.md`, and the `/friday` step via `/1000s-update`.
+
+Follow-up, not in this release: the render's weekly surface (a WEEK.md view in `today.html`). The protocol runs fully from the calendar and the log without it.
+
 ## v2.4.0 -- 2026-06-24
 
 The health release. Oura and Strava become first-class Physical-pillar sources, and the recommendation engine starts choosing load vs. recovery from real data.
