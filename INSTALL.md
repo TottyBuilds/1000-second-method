@@ -1,6 +1,6 @@
-# The 1000 Second Method -- Installer (v2.4.0)
+# The 1000 Second Method -- Installer (v2.5.0)
 
-You are about to install the five protocols and the Daily Punchlist engine into the operator's workspace. This file is the wizard. The operator pasted a URL into Claude Code that points at this file, and now you are reading it.
+You are about to install the six protocols and the Daily Punchlist engine into the operator's workspace. This file is the wizard. The operator pasted a URL into Claude Code that points at this file, and now you are reading it.
 
 Your job, in order: (1) confirm the workspace is sensible, (2) interview the operator for about 12 minutes, (3) help them connect their data sources, (4) write a `1000-second-system/` folder of personalized files into their workspace, (5) install seven slash commands, (6) optionally set up cloud routines, (7) close the session with a clear first action.
 
@@ -12,12 +12,12 @@ Follow this file exactly. Do not improvise. The output quality of the install is
 
 Every count, name, version, and URL in this installer derives from this block. If prose anywhere below disagrees with it, this block wins and the prose is the bug.
 
-- **Version:** 2.4.0
+- **Version:** 2.5.0
 - **Raw repo base:** `https://raw.githubusercontent.com/TottyBuilds/1000-second-method/main`
-- **Generated files:** ~18 into `1000-second-system/` (the seeded brief can be skipped, so the honest count is "about 18"), plus `system/health/` files when the operator connects Oura or Strava
+- **Generated files:** ~19 into `1000-second-system/` (the seeded brief can be skipped, so the honest count is "about 18"), plus `system/health/` files when the operator connects Oura or Strava
 - **Slash commands, always installed:** 7 -- `/1000seconds`, `/friday`, `/brief`, `/pursuit-check`, `/1000s-update`, `/sources`, `/render`
 - **Conditional command:** `/routines` -- installed only if the operator opts into cloud routines in Phase 4
-- **Protocol display names:** (1) The Daily 1000 · (2) The Leverage Matrix · (3) The Agent Brief · (4) The Weekly Kill List · (5) The Public Commitment Slot
+- **Protocol display names:** (1) The Daily 1000 · (2) The Leverage Matrix · (3) The Agent Brief · (4) The Weekly Kill List · (5) The Public Commitment Slot · (6) The 21
 
 Two rules that keep the install correct:
 
@@ -55,7 +55,7 @@ The operator is here for the protocols and the punchlist. Keep the conversation 
 >
 > This takes ~12 minutes. I'm gonna ask about your week as it actually runs, not how you wish it ran. Then I'll walk you through connecting your data sources -- calendar, work messaging, anything else you actually use -- so the system can do the watching for you. The more sources you connect, the better the Daily Punchlist gets.
 >
-> Nothing routes through any server I control. The connected sources stay between you and the services you already use. I'll write ~18 files into your workspace. You own them.
+> Nothing routes through any server I control. The connected sources stay between you and the services you already use. I'll write ~19 files into your workspace. You own them.
 >
 > Ready?
 
@@ -93,7 +93,7 @@ The interview has three parts. Part 2 (sources) is action, not question, so it c
 
 ### Part 1 -- Your whole life shape, plus pillar context
 
-> "Okay. The first protocol -- The Daily 1000 -- is a 16:40 daily block where you put 1000 seconds onto the single highest-leverage thing on the day's punchlist. Before I can place yours, I need to know what your whole week actually looks like. Not just work. Personal too. Where do the natural gaps live, where are the non-negotiables. Walk me through it."
+> "Okay. The first protocol -- The Daily 1000 -- is 16:40 a day: one wedge, 1000 seconds, onto the single highest-leverage thing on the day's punchlist. Before I can place yours, I need to know what your whole week actually looks like. Not just work. Personal too. Where do the natural gaps live, where are the non-negotiables. Walk me through it."
 
 Capture all of this. Dig where vague:
 
@@ -122,6 +122,12 @@ After you have a clear picture, **propose a sweep slot** out loud:
 > "Based on what you said, your most defensible 16:40 slot is probably [SLOT]. That's [REASONING -- e.g., 'before the house wakes up, the only window meeting density can't steal']. Sound right, or want to push back?"
 
 Iterate until they confirm a slot.
+
+Then map their three windows for The 21 (Protocol 6), from the same answers:
+
+> "Last piece of the week shape. The method places wedges into three windows a day: the morning cycle, a midday block if your workday leaves one, and the turn down -- the hour after the house goes quiet, before you do. From what you told me, yours look like: morning [X], midday [Y, or 'most days: none'], turn down [Z]. Sound right?"
+
+Capture all three. "Most days: none" is a valid midday answer -- record it, don't fix it. These personalize `protocols/06-the-21.md` and give `/friday` its placement step.
 
 ### Part 2 -- Source connections
 
@@ -205,7 +211,7 @@ Capture the outcome, why it matters, what "done" looks like. If they don't have 
 
 ### Closing the interview
 
-> "That's everything. Quick recap: [SUMMARY -- life shape, pillar context, placed slot, connected sources, witness, parked outcome]. About to write ~18 files into [WORKSPACE PATH]. Nothing routes through me. Cool to proceed?"
+> "That's everything. Quick recap: [SUMMARY -- life shape, pillar context, placed slot, connected sources, witness, parked outcome]. About to write ~19 files into [WORKSPACE PATH]. Nothing routes through me. Cool to proceed?"
 
 Wait for confirmation. Then run Phase 2.
 
@@ -222,7 +228,7 @@ This is the operator's personal Claude context. Every slash command reads this f
 ```markdown
 # Operator: [NAME]
 
-Personal context for The 1000 Second Method, installed [DATE]. Installer version 2.4.0.
+Personal context for The 1000 Second Method, installed [DATE]. Installer version 2.5.0.
 
 ## Life shape
 
@@ -259,6 +265,12 @@ The punchlist engine reads this to interpret connected source data.
 
 Reasoning: [WHY THIS SLOT -- what it's protected from]
 
+## Windows (The 21)
+
+- **Morning cycle:** [FROM PART 1]
+- **Midday block:** [FROM PART 1 -- or "most days: none"]
+- **The turn down:** [FROM PART 1]
+
 ## Connected sources
 
 [LIST FROM PART 2 -- one line per connected source with the name and what it informs]
@@ -287,13 +299,13 @@ A short orientation for the operator. Not the same as the repo README. This is t
 ```markdown
 # Your 1000 Second System
 
-Installed [DATE]. Version 2.4.0.
+Installed [DATE]. Version 2.5.0.
 
 ## What's here
 
 - `OPERATOR.md` -- your context. Slash commands and the punchlist engine read this first. Edit as your life changes.
 - `PUNCHLIST.md` -- today's stack-ranked list of 1000-second actions across three pillars. Regenerates when you run `/1000seconds`. Do not edit by hand; it gets overwritten.
-- `protocols/` -- the five protocols, personalized to you
+- `protocols/` -- the six protocols, personalized to you
 - `system/` -- the punchlist engine prompt and the connected sources config
 - `templates/` -- blank templates you fill weekly
 - `prompts/` -- Agent Brief template + seeded example + matrix runner
@@ -312,7 +324,7 @@ Installed [DATE]. Version 2.4.0.
 - When the newsletter announces an update: run `/1000s-update`
 - To manage connected sources: run `/sources`
 
-The floor is one 1000-second block a day. Anything beyond that is bonus.
+The floor is one wedge a day -- 1000 seconds on one thing. Anything beyond that is bonus.
 
 ## What not to expect
 
@@ -441,7 +453,7 @@ Write the full punchlist to `1000-second-system/PUNCHLIST.md`. Overwrite the pre
  Reads: log/sweeps · log/kills · log/commitments · parking lot
 ─────────────────────────────────────────────────────────────
 
- FLOOR: one 1000s sweep. That's it. Anything else is bonus.
+ FLOOR: one wedge -- 1000 seconds. That's it. Anything else is bonus.
  Suggested default: [PILLAR] #[N] ([ONE-LINE REASON CITING LEARNING SIGNAL])
 
  7-day coverage: P [X]/7 · M [X]/7 · E [X]/7
@@ -603,7 +615,7 @@ Why this slot: [REASONING -- same reasoning from the interview]
 1. Any time, run `/1000seconds`. The command shows today's full punchlist, highlights the suggested default, and prompts you.
 2. Choose: enter to start 16:40 on the top item, type a number to override, type your own line to redirect, or `q` to just peek and exit.
 3. Set a 16:40 timer. Phone face down. One window. One thing.
-4. When the timer fires, mark complete in `log/sweeps.md` with pillar tag. (Log filename stays `sweeps.md` from v2.1.0 -- the file is internal; only the protocol display name changed.) If you finish early, mark complete early. If interrupted, mark "interrupted" with one line on what stole it.
+4. When the timer fires, mark complete in `log/sweeps.md` with pillar tag, plus the continuation mark: `continued` if you kept going past the timer, `stopped` if you ended at it. That mark is what `/friday` counts for The 21. (Log filename stays `sweeps.md` from v2.1.0 -- the file is internal; only the protocol display name changed.) If you finish early, mark complete early. If interrupted, mark "interrupted" with one line on what stole it.
 
 ## Why this works
 
@@ -774,7 +786,31 @@ This is also the bridge to Grit Collective. The solo witness slot held weekly fo
 If you're at 8/10+ for four weeks running and you have a hard outcome in your parking lot, run `/pursuit-check` -- you're probably ready for a Grit Pursuit.
 ```
 
-### File 11: `templates/leverage-matrix.md`
+### File 11: `protocols/06-the-21.md`
+
+```markdown
+# Protocol 6: The 21
+
+Once a week, in the Friday sitting, you write the list and place it.
+
+About an hour a day of non-work life nets out to roughly 21 wedges a week -- three a day, across the three pillars. Keep one running list of what you're trying to move. That list is where tomorrow's wedge comes from, every night.
+
+Your windows, from your own week:
+
+- **Morning cycle:** [WINDOWS FROM OPERATOR.md]
+- **Midday block:** [WINDOWS FROM OPERATOR.md -- or "most days: none. Squeeze one in when it appears."]
+- **The turn down:** [WINDOWS FROM OPERATOR.md]
+
+The bookends carry a runway: nothing stacked behind them, so a wedge that catches keeps going. Midday runs capped -- take the start, make peace with the timer before you press it. The slot picks the tool.
+
+Place next week's wedges in the Friday sitting (`/friday` walks it), put them on the real calendar, and move them freely during the week. Moving a wedge is compliance, not failure.
+
+The measure is continuations, not minutes: did you continue on, or stop at the timer? Count it as a plain fraction of wedges run. No streaks.
+
+The floor stays one wedge a day, any pillar. Twenty-one is what a planned week looks like, not the price of admission.
+```
+
+### File 12: `templates/leverage-matrix.md`
 
 ```markdown
 # Weekly Leverage Matrix -- Week of [DATE]
@@ -805,7 +841,7 @@ Pre-filled by the system from connected sources. Confirm, correct, kill.
 -
 ```
 
-### File 12: `templates/weekly-review.md`
+### File 13: `templates/weekly-review.md`
 
 ```markdown
 # Weekly Review -- Week of [DATE]
@@ -836,7 +872,7 @@ Pre-filled by the system from connected sources. Confirm, correct, kill.
 (free text -- anything sharper about your taste, your week, your sleep, your tools)
 ```
 
-### File 13: `templates/decision-log.md`
+### File 14: `templates/decision-log.md`
 
 ```markdown
 # Decision footer (paste into meeting notes)
@@ -848,7 +884,7 @@ Pre-filled by the system from connected sources. Confirm, correct, kill.
 - **Next checkpoint:**
 ```
 
-### File 14: `prompts/agent-brief-template.md`
+### File 15: `prompts/agent-brief-template.md`
 
 ```markdown
 # Agent Brief Template
@@ -896,7 +932,7 @@ Markdown. 5 sections. Lead with the headline takeaway. No "we will" filler.
 - Don't hedge every recommendation.
 ```
 
-### File 15: `prompts/seeded-example.md`
+### File 16: `prompts/seeded-example.md`
 
 In v2.0.0, this gets generated from a deferred item the connected sources surfaced. Pick a high-confidence candidate from work messaging or backlog tools: something the operator has been @-mentioned on or assigned to that has not progressed in 7+ days.
 
@@ -932,7 +968,7 @@ Notes from Brent:
 
 If no high-confidence candidate exists in connected sources, skip this file with a note: "Once your sources have a week of data, the seeded brief will populate. Run `/brief` for the generic template until then."
 
-### File 16: `prompts/matrix-runner.md`
+### File 17: `prompts/matrix-runner.md`
 
 ```markdown
 # Run the matrix on this backlog
@@ -958,7 +994,7 @@ Output format:
 - A final "Kills" list with what to kill and the trade-off
 ```
 
-### File 17: `pursuits-parking-lot.md`
+### File 18: `pursuits-parking-lot.md`
 
 ```markdown
 # Pursuits parking lot
@@ -981,7 +1017,7 @@ Status options: `parked` | `ready-to-commit` | `committed`
 Run `/pursuit-check` when you want a read on whether any of these are ready.
 ```
 
-### File 18: `WHEN_YOU_RE_READY.md`
+### File 19: `WHEN_YOU_RE_READY.md`
 
 ```markdown
 # When you're ready
@@ -1100,13 +1136,13 @@ Voice: Brent's. No hype. Specific. No em dashes. When the engine surfaces a lear
 
 ```markdown
 ---
-description: The Friday weekly ritual -- matrix, kills, next-week commitment, witness draft
+description: The Friday weekly ritual -- matrix, kills, the 21, commitment, witness draft
 ---
 
-Read `1000-second-system/OPERATOR.md`. Then run the four-part Friday ritual in order:
+Read `1000-second-system/OPERATOR.md`. Then run the five-part Friday ritual in order:
 
 **Part 1: Sweep adherence summary**
-Read `1000-second-system/log/sweeps.md`. Count this week's sweeps and pillar distribution. Surface the numbers out loud. If a Friday pre-compose routine has staged a matrix at `log/.friday-staged.md`, load it; otherwise pull fresh from sources listed in `system/sources.md`.
+Read `1000-second-system/log/sweeps.md`. Count this week's wedges and pillar distribution, and the continuation fraction: of the wedges run, how many carried past the timer (the `continued` marks). Report it as a plain fraction, never a streak. Surface the numbers out loud. If a Friday pre-compose routine has staged a matrix at `log/.friday-staged.md`, load it; otherwise pull fresh from sources listed in `system/sources.md`.
 
 **Part 2: Leverage Matrix**
 Walk through the pre-filled 2x2 (from staged file or fresh ingest). For each item, confirm placement or correct it. Surface kills. Confirm kills before logging.
@@ -1114,14 +1150,17 @@ Walk through the pre-filled 2x2 (from staged file or fresh ingest). For each ite
 **Part 3: Kill list**
 After the matrix, ask: "Anything else you stopped doing this week that didn't come from the matrix?" Append all kills (matrix + manual) to `log/kills.md` with one-line reasoning each. Tag each kill with a CATEGORY (the kind of work, not just the specific item) so the daily punchlist engine can downweight similar items going forward.
 
-**Part 4: Next week's commitment + witness draft**
+**Part 4: The 21 -- place next week**
+Build next week's list: roughly 21 wedges, three a day, across the three pillars. Pull candidates from the matrix's high-compounding quadrant, `pursuits-parking-lot.md`, and whatever the operator names. Place each wedge into a window (morning cycle / midday block / the turn down) using the Windows map in `OPERATOR.md`, and write the placed week to `1000-second-system/WEEK.md` (item · pillar · window · day). Remind them once: the floor is still one a day, and moving a wedge during the week is compliance, not failure.
+
+**Part 5: Next week's commitment + witness draft**
 Help the operator pick next week's commitment. Must be: specific, time-and-place-bound, observable. Reads from `OPERATOR.md` for witness channel + format. Drafts the message in that channel's style. Saves the draft to `bundles/witness-this-week.md`. Appends the commitment to `log/commitments.md` with outcome marker `pending`.
 
 After drafting, ask: "Sending the witness message now, or later this weekend?"
 - **Now:** open the operator's witness channel in their default app (or print the message for them to copy/paste). When the operator confirms "sent", append `sent_at: [TIMESTAMP]` to the matching `log/commitments.md` entry.
 - **Later:** create a `bundles/.witness-pending` flag file containing the timestamp the draft was created. The daily punchlist engine reads this flag and surfaces the unsent draft in `/1000seconds` output until either (a) the operator runs `/friday` again and confirms send, or (b) the operator explicitly kills the commitment.
 
-If the operator's witness arrangement is "solo until Week 4" (set during install), still produce the draft -- they may want to send it to themselves, post publicly, or surface it in their own private log. Do NOT silently skip Part 4 for solo operators; the draft IS the protocol.
+If the operator's witness arrangement is "solo until Week 4" (set during install), still produce the draft -- they may want to send it to themselves, post publicly, or surface it in their own private log. Do NOT silently skip Part 5 for solo operators; the draft IS the protocol.
 
 **Closing:**
 Surface any graduation signal. If `log/kills.md` has 3+ entries in the same category over the last 3 weeks, mention it: "Pattern showing in your kill list -- might be worth running `/pursuit-check` this week." If `pursuits-parking-lot.md` has a non-parked outcome and 4+ weeks of held witness slot, also surface.
@@ -1430,7 +1469,7 @@ Voice: Brent's.
 
 ## Phase 5: Closing
 
-Write `1000-second-system/.installed-version` containing just `2.4.0`.
+Write `1000-second-system/.installed-version` containing just `2.5.0`.
 
 Then close with this message to the operator (in Brent's voice, no em dashes, paraphrase but match the shape):
 
@@ -1490,7 +1529,7 @@ Before the Phase 5 closing message, verify the install you just wrote. This is t
    Portable check: `grep -rn "$(printf '\342\200\224')" 1000-second-system .claude/commands` (the `printf` emits the em dash byte sequence, so this installer file stays clean) -> expect no matches.
 2. **No leftover tokens.** No finished file still contains a `[BRACKET PLACEHOLDER]` you forgot to fill, an unresolved `[IF ...]` conditional, or a `{{...}}` token.
    `grep -rnE "\[[A-Z][A-Z _/-]+\]|\[IF |\{\{" 1000-second-system` -> expect no matches in finished prose.
-3. **Version stamps agree.** `.installed-version`, the `OPERATOR.md` header, and the operator `README.md` all show the Manifest Version (2.4.0). They must match.
+3. **Version stamps agree.** `.installed-version`, the `OPERATOR.md` header, and the operator `README.md` all show the Manifest Version (2.5.0). They must match.
 4. **The expected set exists.** Seven command files in `.claude/commands/` (`1000seconds`, `friday`, `brief`, `pursuit-check`, `1000s-update`, `sources`, `render`), plus `routines` only if the operator enabled cloud routines. The core Phase 2 files exist. Every command file has YAML frontmatter with a `description`.
 
 If any check fails, fix it before you close. The operator never sees this checklist -- they just get a correct install.
@@ -1500,7 +1539,7 @@ If any check fails, fix it before you close. The operator never sees this checkl
 ## End of installer
 
 The operator should now have:
-- `1000-second-system/` folder with ~18 personalized files including the punchlist engine (with v2.1.0 learning rules) and sources config
+- `1000-second-system/` folder with ~19 personalized files including the punchlist engine (with v2.1.0 learning rules) and sources config
 - `.claude/commands/` with 7 slash commands (plus optional `/routines` if they opted in)
 - `routines/` folder with cron-ready configs (only if they opted in)
 - Connected data sources providing live input to the punchlist (or, for skipped-sources operators, an interview-and-parking-lot-driven punchlist that gets richer once they add sources via `/sources`)

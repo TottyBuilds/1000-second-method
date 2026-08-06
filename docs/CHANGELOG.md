@@ -2,7 +2,7 @@
 
 All notable changes to The 1000 Second Method installer.
 
-## v2.5.0 -- 2026-08-05 (docs first; installer pass follows before release)
+## v2.5.0 -- 2026-08-05
 
 The week release. The method gains its sixth protocol and the unit gets its true name.
 
@@ -16,9 +16,11 @@ What stays the same:
 - The first five protocols, their names, their grades.
 - The single-file install, sources sovereignty, no nudging, free, MIT.
 
-Breaking: nothing. Existing installs pick up the new protocol file and the `/friday` step via `/1000s-update` once the installer pass lands.
+Also in this release: the installer itself. Manifest at 2.5.0 and ~19 generated files, the windows-mapping step in the interview (morning cycle / midday block / the turn down, "most days: none" is a valid midday answer), `protocols/06-the-21.md` generated and personalized to the operator's windows, the continuation mark in the daily log, and `/friday` grown to five parts with the placement step writing `WEEK.md`.
 
-Remaining before this version tags: the INSTALL.md pass (manifest count, `protocols/06-the-21.md` generation, the windows-mapping interview step, `/friday` command update) and the render's weekly surface. This entry ships with the docs so the vocabulary lands in one review.
+Breaking: nothing. Existing installs pick up the new protocol file, the Windows block in `OPERATOR.md`, and the `/friday` step via `/1000s-update`.
+
+Follow-up, not in this release: the render's weekly surface (a WEEK.md view in `today.html`). The protocol runs fully from the calendar and the log without it.
 
 ## v2.4.0 -- 2026-06-24
 
