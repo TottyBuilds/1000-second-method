@@ -1247,7 +1247,7 @@ Allow the operator to:
 
 ## Health sources: Oura and Strava
 
-These two have no MCP, so they connect via the operator's own API credentials, stored locally in `1000-second-system/system/health/credentials.json`. That folder is inside the gitignored install directory: the credentials never leave the machine and are never committed. Create `system/health/` if it does not exist.
+These two have no MCP, so they connect via the operator's own API credentials, stored locally in `1000-second-system/system/health/credentials.json`. That folder is inside the gitignored install directory: the credentials never leave the machine and are never committed. Create `system/health/` if it does not exist. The full click-by-click walkthrough is at `docs/health-setup.md` (raw: `https://raw.githubusercontent.com/TottyBuilds/1000-second-method/main/docs/health-setup.md`) -- point the operator there if they want to do the account steps ahead of time.
 
 **Connect Oura:**
 1. Send the operator to `https://cloud.ouraring.com/` to create an API token (Personal Access Token if their account offers one; otherwise a Personal OAuth app with scopes `daily`, `heartrate`, `workout`, `personal`). Confirm the current method against `https://cloud.ouraring.com/docs/authentication`.

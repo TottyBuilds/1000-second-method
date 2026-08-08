@@ -70,6 +70,8 @@ The system reads from data sources you already use. Each one is opt-in during in
 
 Bring the ones you use. Skip the rest. The punchlist quality scales with how many honest sources you connect.
 
+Connecting Oura or Strava? They use your own API credentials (no MCP, stored locally). See [`docs/health-setup.md`](docs/health-setup.md) for the step-by-step.
+
 ## What this is NOT
 
 Not a course. Not a SaaS. Not paywalled. Not a template. Not a nudge machine.
