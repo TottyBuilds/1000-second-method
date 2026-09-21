@@ -2,6 +2,24 @@
 
 All notable changes to The 1000 Second Method installer.
 
+## v2.6.0 -- 2026-09-20
+
+The inside-the-wedge release. Protocol 1 finally names what happens during the rep.
+
+What changes:
+- **Stash & Breach** land as one paired move inside Protocol 1 (The Daily 1000), not as a seventh protocol. Stash = lateral tangent: one-line capture, decline to chase, keep advancing (`log/stashes.md`). Breach = upstream prerequisite: clearing it IS the work; log as progress and carry the original objective forward.
+- **The tell:** could you hit the target without it? Yes → stash. No → breach. Stash is the pressure valve that makes a breach survivable.
+- **Third sweep outcome:** `log/sweeps.md` accepts `breach` alongside `continued` / `stopped`. A logged breach satisfies the day's floor and counts as a held Protocol 1 rep.
+- **`/friday` stash triage** runs before the kills: assign, promote to parking lot, or kill. Stashes never go straight into `pursuits-parking-lot.md` as mid-rep one-liners.
+- **Copy drift fixed:** README and install close no longer say "Five protocols" after The 21 shipped in v2.5.0.
+
+What stays the same:
+- Six protocols. Same names. Same IP. Life pillars stay Physical / Mental / Emotional.
+- Floor: one wedge a day, any pillar.
+- Free, MIT, sources sovereign.
+
+Breaking: nothing. Existing installs pick up Stash & Breach language, `log/stashes.md`, and the `breach` outcome via `/1000s-update`.
+
 ## v2.5.0 -- 2026-08-05
 
 The week release. The method gains its sixth protocol and the unit gets its true name.
