@@ -1,6 +1,6 @@
 # The 1000 Second Method
 
-> *Five protocols. One install. The system watches so you can focus -- and learns as you go.*
+> *Six protocols. One install. The system watches so you can focus -- and learns as you go.*
 
 A free, agent-native installer for operators who use AI like infrastructure, not magic.
 
@@ -32,12 +32,12 @@ Work does not get its own bucket. That choice is on purpose. The pillars are vis
 
 The wizard installs six protocols into your workspace as files. Each one is the smallest thing that durably shifts a week:
 
-1. **The Daily 1000** -- A daily 16:40 deep block on the punchlist's top item. (Renamed from "The 1000 Second Sweep" in v2.2.0 -- "sweep" implied clearing through things, but the protocol is the opposite: putting 1000 seconds onto one thing.)
+1. **The Daily 1000** -- A daily 16:40 deep block on the punchlist's top item. Inside the wedge: **Stash & Breach** as one paired move (tangent you capture vs prerequisite you must clear). (Renamed from "The 1000 Second Sweep" in v2.2.0 -- "sweep" implied clearing through things, but the protocol is the opposite: putting 1000 seconds onto one thing.)
 2. **The Leverage Matrix** -- A weekly 2x2 (now ingested from your sources, not pasted) that kills about 60% of most operators' backlogs the first run
 3. **The Agent Brief** -- A 5-part template for handing work to an LLM that turns 6/10 outputs into 8.5/10 outputs
 4. **The Weekly Kill List** -- A Friday 4pm log of what you stopped doing, and why
 5. **The Public Commitment Slot** -- A weekly witnessed commitment that lifts follow-through 15-25 percentage points
-6. **The 21** -- A weekly plan: about 21 wedges placed into the day's three windows (the morning cycle, the midday block, the turn down), scored by continuations, floor untouched
+6. **The 21** -- A weekly plan: about 21 wedges placed into the day's three windows (the morning cycle, the midday block, the turn down), scored by continuations and breaches, floor untouched
 
 Full descriptions in [`docs/PROTOCOLS.md`](docs/PROTOCOLS.md).
 

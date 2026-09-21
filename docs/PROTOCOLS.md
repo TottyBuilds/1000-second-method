@@ -102,16 +102,38 @@ The punchlist's role: it removes the choice anxiety. Picking what to put your 10
 
 - **File:** `protocols/01-sweep.md` -- personalized to your placed slot from Part 1 of the interview. Filename kept stable from v2.1.0 to avoid migration churn; internally documents "The Daily 1000."
 - **Command:** `/1000seconds` (shows the punchlist and either starts your 16:40 timer or exits cleanly if you just wanted to peek)
-- **Log:** `log/sweeps.md` -- append-only entry per 1000 logged, tagged with pillar. Filename kept stable from v2.1.0.
+- **Log:** `log/sweeps.md` -- append-only entry per 1000 logged, tagged with pillar, outcome (`continued` / `stopped` / `breach`). Filename kept stable from v2.1.0.
+- **Stash log:** `log/stashes.md` -- append-only one-liners captured mid-wedge (triaged in `/friday`)
 - **Schedule:** Daily, at your placed slot
 - **Optional routine:** Daily 1000seconds reminder at your placed slot (off by default), morning punchlist regeneration (on by default if you opted into silent routines)
 
+
+### Stash & Breach (inside the wedge)
+
+Nothing else in the method names what happens *inside* the rep. The punchlist ranks before it. The 21 places it. The Kill List and the continuation count review after it. Protocol 1 used to name only the prohibition (no phone, no email tab, no second monitor) and give the tangent nowhere to go. **Stash & Breach** are one paired move that fills that hole. They stay on the same line because they only work as a pair.
+
+- **Stash** -- a tangent surfaces mid-wedge. Capture it in one line, decline to chase, keep advancing. Lateral. Off the axis of advance.
+- **Breach** -- the task sits on an unscoped prerequisite. Clearing that prerequisite IS the work. Log it as progress and carry the original objective forward. Not a miss. Upstream, in the path.
+
+**The tell:** could you hit the target without it? Yes → stash. No → breach.
+
+**Why the pair:** a breach is unscoped work in unfamiliar territory, which throws off the most tangents. With nowhere to put them, you start calling detours breaches to justify the chase. **The stash is the pressure valve that makes a breach survivable.**
+
+Rules of fit:
+- Stashes go to `log/stashes.md` (append-only, one line, tagged with the wedge). Do **not** dump them into `pursuits-parking-lot.md` -- that file is pursuit-scale outcomes and feeds graduation.
+- A stash is free: capturing it does not cost the rep.
+- A logged breach **satisfies** the day's floor. It is a held rep, not an override and not a miss.
+- In `log/sweeps.md`, `breach` is a third outcome alongside `continued` / `stopped`, and it carries the original objective forward to the next wedge.
+- Stash triage is a step in `/friday` (before the kills): assign each stash to a slot, promote it to the parking lot if it has grown into a real outcome, or kill it into `log/kills.md`.
+
 ### How to grade yourself
 
-- **9/10:** 5-6 1000s per week, started on time, on the punchlist's top item or a deliberate override
+- **9/10:** 5-6 1000s per week, started on time, on the punchlist's top item or a deliberate override -- or a logged **breach** that cleared an upstream prerequisite and carried the original objective forward
 - **7/10:** 4-5 1000s per week, started within 15 minutes of slot
 - **5/10:** 2-3 1000s per week, sometimes started late, occasionally on something off the punchlist with no reason logged
-- **3/10:** Less than 2 1000s per week, or "split" the time across multiple things
+- **3/10:** Less than 2 1000s per week, or "split" the time across multiple things (chasing stashes instead of capturing them)
+
+A logged breach counts as a held rep. A stash is free -- it does not cost the grade. Calling every detour a breach to justify the chase is a 3/10 pattern; use the tell.
 
 Below 5/10 for two consecutive weeks is the drift signal. The system will surface it if you have the drift-alert routine on.
 
@@ -276,13 +298,13 @@ Then you put them on the actual calendar, and you move them freely. Moving a wed
 
 Gollwitzer's implementation-intentions research -- the same result behind The Daily 1000: "I will do X at Y time in Z place" produces a 2-3x increase in follow-through over vague intent. The 21 is that sentence written twenty-one times, with the windows as the Z. And the standing list kills the nightly blank page: when you pick tomorrow's wedge the night before, you pick from a list that already exists.
 
-The measurement is deliberately not minutes. At the end of a wedge, one question: did you continue on, or did it stop at the timer? Count continuations as a plain fraction of wedges run. A week where most wedges turned into runways is a week with real momentum in it. No streaks, no gamified totals. A wedge that grew from 1000 seconds to 3000 is not a high score; it is a continuation.
+The measurement is deliberately not minutes. At the end of a wedge, ask: did you continue on, stop at the timer, or **breach** (continue on an upstream prerequisite, original objective carried forward)? Count continuations and breaches separately as plain fractions of wedges run -- do not fold breaches into either continued or stopped. A week where most wedges turned into runways is a week with real momentum in it. No streaks, no gamified totals. A wedge that grew from 1000 seconds to 3000 is not a high score; it is a continuation.
 
 ### Where it lives
 
 - **File:** `protocols/06-the-21.md` -- personalized to your windows from the interview
 - **Command:** Run as part of `/friday` -- after the matrix ranks and the kills clear, you place next week's wedges before you commit to the witnessed one
-- **Log:** continuations recorded per wedge in `log/sweeps.md` (continued, or stopped at the timer)
+- **Log:** outcomes recorded per wedge in `log/sweeps.md` (`continued`, `stopped`, or `breach` with the original objective carried forward)
 - **Schedule:** Weekly, in the same Friday sitting
 
 ### How to grade yourself
@@ -303,7 +325,7 @@ The protocols are not independent. They form a weekly cadence on top of the dail
 | Every morning (silent) | Punchlist regenerates from connected sources | Cloud routine, off if not opted in |
 | Any time, daily | `/1000seconds` -- shows the punchlist, optionally starts your 16:40 timer | Protocol 1 |
 | Ad-hoc when delegating | `/brief` | Protocol 3 |
-| Friday 4pm | `/friday` -- matrix → kills → place next week's 21 → commitment → witness draft | Protocols 2 + 4 + 6 + 5 |
+| Friday 4pm | `/friday` -- matrix → **stash triage** → kills → place next week's 21 → commitment → witness draft | Protocols 1 (stash) + 2 + 4 + 6 + 5 |
 | Saturday | Send the witness message | Protocol 5 |
 | Monthly or when data warrants | `/pursuit-check` -- read logs, surface graduation signal | Cross-protocol |
 

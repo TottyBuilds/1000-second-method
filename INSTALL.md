@@ -1,4 +1,4 @@
-# The 1000 Second Method -- Installer (v2.5.0)
+# The 1000 Second Method -- Installer (v2.6.0)
 
 You are about to install the six protocols and the Daily Punchlist engine into the operator's workspace. This file is the wizard. The operator pasted a URL into Claude Code that points at this file, and now you are reading it.
 
@@ -12,7 +12,7 @@ Follow this file exactly. Do not improvise. The output quality of the install is
 
 Every count, name, version, and URL in this installer derives from this block. If prose anywhere below disagrees with it, this block wins and the prose is the bug.
 
-- **Version:** 2.5.0
+- **Version:** 2.6.0
 - **Raw repo base:** `https://raw.githubusercontent.com/TottyBuilds/1000-second-method/main`
 - **Generated files:** ~19 into `1000-second-system/` (the seeded brief can be skipped, so the honest count is "about 18"), plus `system/health/` files when the operator connects Oura or Strava
 - **Slash commands, always installed:** 7 -- `/1000seconds`, `/friday`, `/brief`, `/pursuit-check`, `/1000s-update`, `/sources`, `/render`
@@ -228,7 +228,7 @@ This is the operator's personal Claude context. Every slash command reads this f
 ```markdown
 # Operator: [NAME]
 
-Personal context for The 1000 Second Method, installed [DATE]. Installer version 2.5.0.
+Personal context for The 1000 Second Method, installed [DATE]. Installer version 2.6.0.
 
 ## Life shape
 
@@ -357,7 +357,8 @@ Read ALL of the following, in this order:
    - Backlog tools: open items assigned to operator
 
 **Internal logs (what they've actually done):**
-3. `log/sweeps.md` -- last 14 days of completed sweeps. For each entry, capture: date, pillar tag, the activity, whether it came from the suggested default or an override, the source citation if any.
+3. `log/sweeps.md` -- last 14 days of completed sweeps. For each entry, capture: date, pillar tag, the activity, whether it came from the suggested default or an override, the source citation if any, and outcome (`continued` / `stopped` / `breach`).
+3b. `log/stashes.md` -- append-only mid-wedge one-liners (Stash). Empty at install. Triaged in `/friday` before kills. Never dump raw stashes into `pursuits-parking-lot.md`.
 4. `log/kills.md` -- last 4 weeks of kills. For each kill, capture: kill category (the kind of work, not just the specific item), the trade-off named, the date.
 5. `log/commitments.md` -- last 4 weeks of witness commitments. For each: text, outcome (hit/missed/partial), date.
 6. `PUNCHLIST.md` (yesterday's, if it exists) -- what was promoted as default, what was in each pillar, what got marked complete vs skipped.
@@ -615,7 +616,7 @@ Why this slot: [REASONING -- same reasoning from the interview]
 1. Any time, run `/1000seconds`. The command shows today's full punchlist, highlights the suggested default, and prompts you.
 2. Choose: enter to start 16:40 on the top item, type a number to override, type your own line to redirect, or `q` to just peek and exit.
 3. Set a 16:40 timer. Phone face down. One window. One thing.
-4. When the timer fires, mark complete in `log/sweeps.md` with pillar tag, plus the continuation mark: `continued` if you kept going past the timer, `stopped` if you ended at it. That mark is what `/friday` counts for The 21. (Log filename stays `sweeps.md` from v2.1.0 -- the file is internal; only the protocol display name changed.) If you finish early, mark complete early. If interrupted, mark "interrupted" with one line on what stole it.
+4. When the timer fires, mark complete in `log/sweeps.md` with pillar tag, plus the outcome mark: `continued` if you kept going past the timer on the named objective, `stopped` if you ended at it, or `breach` if you cleared an unscoped upstream prerequisite and are carrying the original objective forward (breach satisfies the day's floor). Mid-wedge tangents you decline go as one line into `log/stashes.md` -- that is a **stash**, free, not a miss. Tell: could you hit the target without it? Yes → stash. No → breach. Those marks are what `/friday` counts for The 21. (Log filename stays `sweeps.md` from v2.1.0 -- the file is internal; only the protocol display name changed.) If you finish early, mark complete early. If interrupted, mark "interrupted" with one line on what stole it.
 
 ## Why this works
 
@@ -625,7 +626,7 @@ The punchlist removes choice anxiety. Picking what to put your 1000 on is the pa
 
 ## How to grade yourself
 
-- 5-6 1000s per week, on time, on the punchlist's top item or a deliberate override: 9/10
+- 5-6 1000s per week, on time, on the punchlist's top item or a deliberate override, or a logged breach that carried the objective forward: 9/10
 - 4-5 1000s per week: 7/10
 - 2-3 1000s per week: 5/10
 - Less than 2: drift signal, look at why
@@ -722,7 +723,7 @@ Friday at 4pm. You write down what you stopped doing this week and why. Not what
 
 ## How to run it
 
-Part of the `/friday` ritual. After the matrix surfaces kills, the command asks for any additional kills not captured by the matrix -- things you stopped doing this week that came from outside the formal backlog.
+Part of the `/friday` ritual. After stash triage and the matrix surfaces kills, the command asks for any additional kills not captured by the matrix -- things you stopped doing this week that came from outside the formal backlog.
 
 Each entry: what, why (one line), what you said no to that would've been easier to say yes to.
 
@@ -1136,31 +1137,34 @@ Voice: Brent's. No hype. Specific. No em dashes. When the engine surfaces a lear
 
 ```markdown
 ---
-description: The Friday weekly ritual -- matrix, kills, the 21, commitment, witness draft
+description: The Friday weekly ritual -- matrix, stash triage, kills, the 21, commitment, witness draft
 ---
 
-Read `1000-second-system/OPERATOR.md`. Then run the five-part Friday ritual in order:
+Read `1000-second-system/OPERATOR.md`. Then run the Friday ritual in order:
 
 **Part 1: Sweep adherence summary**
-Read `1000-second-system/log/sweeps.md`. Count this week's wedges and pillar distribution, and the continuation fraction: of the wedges run, how many carried past the timer (the `continued` marks). Report it as a plain fraction, never a streak. Surface the numbers out loud. If a Friday pre-compose routine has staged a matrix at `log/.friday-staged.md`, load it; otherwise pull fresh from sources listed in `system/sources.md`.
+Read `1000-second-system/log/sweeps.md`. Count this week's wedges and pillar distribution, plus continuation and breach fractions: of the wedges run, how many `continued` past the timer on the named objective, how many `stopped`, and how many `breach`ed (upstream prerequisite cleared, objective carried forward). Report each as a plain fraction, never a streak. Do not fold breaches into continued or stopped.
 
 **Part 2: Leverage Matrix**
-Walk through the pre-filled 2x2 (from staged file or fresh ingest). For each item, confirm placement or correct it. Surface kills. Confirm kills before logging.
+Surface the numbers out loud. If a Friday pre-compose routine has staged a matrix at `log/.friday-staged.md`, load it; otherwise pull fresh from sources listed in `system/sources.md`. Walk through the pre-filled 2x2. For each item, confirm placement or correct it. Surface kills. Confirm kills before logging.
 
-**Part 3: Kill list**
-After the matrix, ask: "Anything else you stopped doing this week that didn't come from the matrix?" Append all kills (matrix + manual) to `log/kills.md` with one-line reasoning each. Tag each kill with a CATEGORY (the kind of work, not just the specific item) so the daily punchlist engine can downweight similar items going forward.
+**Part 3: Stash triage (before additional kills)**
+Read `1000-second-system/log/stashes.md` for the week. For each stash: assign it to a calendar/slot, promote it into `pursuits-parking-lot.md` only if it has grown into a real hard outcome (what-done / why-it-matters), or kill it into `log/kills.md`. Do not dump mid-wedge one-liners straight into the parking lot -- that poisons `/pursuit-check`. Stash is the pressure valve that makes breaches survivable; triage is where most stashes die on review, which is the point.
 
-**Part 4: The 21 -- place next week**
+**Part 4: Kill list**
+After stash triage and the matrix, ask: "Anything else you stopped doing this week that didn't come from the matrix?" Append all kills (matrix + manual + killed stashes) to `log/kills.md` with one-line reasoning each. Tag each kill with a CATEGORY (the kind of work, not just the specific item) so the daily punchlist engine can downweight similar items going forward.
+
+**Part 5: The 21 -- place next week**
 Build next week's list: roughly 21 wedges, three a day, across the three pillars. Pull candidates from the matrix's high-compounding quadrant, `pursuits-parking-lot.md`, and whatever the operator names. Place each wedge into a window (morning cycle / midday block / the turn down) using the Windows map in `OPERATOR.md`, and write the placed week to `1000-second-system/WEEK.md` (item · pillar · window · day). Remind them once: the floor is still one a day, and moving a wedge during the week is compliance, not failure.
 
-**Part 5: Next week's commitment + witness draft**
+**Part 6: Next week's commitment + witness draft**
 Help the operator pick next week's commitment. Must be: specific, time-and-place-bound, observable. Reads from `OPERATOR.md` for witness channel + format. Drafts the message in that channel's style. Saves the draft to `bundles/witness-this-week.md`. Appends the commitment to `log/commitments.md` with outcome marker `pending`.
 
 After drafting, ask: "Sending the witness message now, or later this weekend?"
 - **Now:** open the operator's witness channel in their default app (or print the message for them to copy/paste). When the operator confirms "sent", append `sent_at: [TIMESTAMP]` to the matching `log/commitments.md` entry.
 - **Later:** create a `bundles/.witness-pending` flag file containing the timestamp the draft was created. The daily punchlist engine reads this flag and surfaces the unsent draft in `/1000seconds` output until either (a) the operator runs `/friday` again and confirms send, or (b) the operator explicitly kills the commitment.
 
-If the operator's witness arrangement is "solo until Week 4" (set during install), still produce the draft -- they may want to send it to themselves, post publicly, or surface it in their own private log. Do NOT silently skip Part 5 for solo operators; the draft IS the protocol.
+If the operator's witness arrangement is "solo until Week 4" (set during install), still produce the draft -- they may want to send it to themselves, post publicly, or surface it in their own private log. Do NOT silently skip Part 6 for solo operators; the draft IS the protocol.
 
 **Closing:**
 Surface any graduation signal. If `log/kills.md` has 3+ entries in the same category over the last 3 weeks, mention it: "Pattern showing in your kill list -- might be worth running `/pursuit-check` this week." If `pursuits-parking-lot.md` has a non-parked outcome and 4+ weeks of held witness slot, also surface.
@@ -1473,12 +1477,12 @@ Write `1000-second-system/.installed-version` containing just `2.5.0`.
 
 Then close with this message to the operator (in Brent's voice, no em dashes, paraphrase but match the shape):
 
-> "Done. Five protocols installed, plus the punchlist engine and your connected sources. Your placed sweep slot is [SLOT]. Your witness channel is [CHANNEL]. Connected sources: [LIST].
+> "Done. Six protocols installed, plus the punchlist engine and your connected sources. Your placed sweep slot is [SLOT]. Your witness channel is [CHANNEL]. Connected sources: [LIST].
 >
 > You already saw the first punchlist a minute ago. Two things to do next:
 >
 > 1. Tomorrow at [SLOT TIME], run `/1000seconds`. Press enter to start 16:40 on the suggested default, type a number to override, type your own line, or `q` to just peek.
-> 2. This Friday at 4pm, run `/friday`. That's the first weekly ritual -- matrix, kills, next week's commitment, witness draft.
+> 2. This Friday at 4pm, run `/friday`. That's the first weekly ritual -- matrix, stash triage, kills, the 21, commitment, witness draft.
 >
 > One thing to know: the punchlist engine in v2.1.0 learns from your logs. Every override you do, every kill you confirm on Friday, every parked outcome that sits in your parking lot -- the engine reads them tomorrow and uses them to rank. By Day 7 it should start feeling specific. By Day 14 it should feel yours. If it doesn't, that's a signal to me, not a failure on your end -- file an issue.
 >
