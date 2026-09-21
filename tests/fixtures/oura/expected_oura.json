@@ -1,0 +1,10 @@
+{
+  "connected": true,
+  "status": "fresh",
+  "today": {"readiness": 82, "sleep_score": 86, "hrv_ms": 48, "resting_hr": 51, "sleep_hours": 7.5},
+  "trend": [
+    {"date": "9/19", "readiness": 68, "sleep_score": 66, "hrv_ms": 31},
+    {"date": "9/20", "readiness": null, "sleep_score": 74, "hrv_ms": null},
+    {"date": "9/21", "readiness": 82, "sleep_score": 86, "hrv_ms": 48}
+  ]
+}

@@ -2,6 +2,15 @@
 
 All notable changes to The 1000 Second Method installer.
 
+## Unreleased -- Oura client and offline fixtures
+
+- Add a Python stdlib Oura v2 client for readiness, sleep score, and overnight metrics, with pagination, OAuth refresh-token rotation, and atomic cache updates that preserve Strava and last good readings on failure.
+- Add synthetic fixtures, offline unit tests, and CI. Missing readings stay null; naps do not replace main sleep, and unsynced days do not borrow yesterday's scores.
+- Make `docs/oura.md` the authoritative Oura connection guide for INSTALL and `/sources`, with exact credential keys. OAuth2 with `daily` scope replaces the retired PAT-creation instructions, following Oura's current API documentation.
+- Label sleep duration as hours asleep, matching Oura's `total_sleep_duration`.
+
+Existing Oura installs can pick up the helper and guide via `/1000s-update`; preserve local credentials and caches. Live verification requires the operator's own token and is optional for the fixtures PR. Six protocols and three life pillars remain unchanged.
+
 ## v2.6.0 -- 2026-09-20
 
 The inside-the-wedge release. Protocol 1 finally names what happens during the rep.

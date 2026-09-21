@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Mint a valid Strava access token from the stored refresh token.
 
-The only generated code in the 1000 Second Method health integration. Everything
-else (Oura GETs, Strava data GETs, normalization into health-data.json) is done
-by the agent inline. This script exists because Strava access tokens expire every
+The Strava token helper in the 1000 Second Method health integration. Strava data
+GETs and normalization are done by the agent inline; oura_client.py handles Oura.
+This script exists because Strava access tokens expire every
 6 hours and the OAuth refresh + token rotation is the one fiddly part worth making
 deterministic.
 

@@ -64,7 +64,7 @@ The system reads from data sources you already use. Each one is opt-in during in
 | Google / Apple / Outlook Calendar | Mental + Emotional items; placed slot collision check |
 | Slack | Mental items (@-mentions, DM debt, parked threads) |
 | Granola or other meeting transcripts | Mental items (unresolved decisions, action items) |
-| Oura | Physical items (readiness, sleep, HRV -- load vs. recovery) |
+| [Oura](docs/oura.md) | Physical items (readiness, sleep, HRV -- load vs. recovery); setup and offline fixture check |
 | Strava / Apple Health / Garmin | Physical items (gaps, recovery flags) |
 | Family or personal calendar | Emotional items (relational commitments, missed presence) |
 | Linear / Notion / GitHub / Asana | Backlog items for the weekly matrix |

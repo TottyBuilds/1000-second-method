@@ -1,0 +1,25 @@
+name: Oura offline checks
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  offline:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.9', '3.13']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Unit tests (no credentials or live API)
+        run: python -m unittest discover -s tests -v
+      - name: Fixture dry run
+        run: python docs/oura_client.py --fixtures tests/fixtures/oura --end-date 2026-09-21 --dry-run
