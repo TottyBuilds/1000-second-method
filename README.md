@@ -64,7 +64,7 @@ The system reads from data sources you already use. Each one is opt-in during in
 | Google / Apple / Outlook Calendar | Mental + Emotional items; placed slot collision check |
 | Slack | Mental items (@-mentions, DM debt, parked threads) |
 | Granola or other meeting transcripts | Mental items (unresolved decisions, action items) |
-| [Oura](docs/oura.md) | Physical items (readiness, sleep, HRV -- load vs. recovery); setup and offline fixture check |
+| [Oura](docs/oura.md) | Physical items (readiness, sleep, HRV -- load vs. recovery) |
 | Strava / Apple Health / Garmin | Physical items (gaps, recovery flags) |
 | Family or personal calendar | Emotional items (relational commitments, missed presence) |
 | Linear / Notion / GitHub / Asana | Backlog items for the weekly matrix |
@@ -89,6 +89,14 @@ https://raw.githubusercontent.com/TottyBuilds/1000-second-method/main/INSTALL.md
 Claude Code fetches the installer, runs the 12-minute interview, sets up your connected sources, generates a `1000-second-system/` folder in your workspace, and adds the slash commands.
 
 The interview is conversational -- no forms. It asks about your whole life shape (work AND personal), your pillar context, your witness situation, then walks you through connecting the data sources you already use. The depth of your answers and the breadth of your connected sources determines the quality of your install.
+
+### Connect your Oura Ring
+
+During install, choose **Full wire-up** and ask to connect Oura. Already installed? Run `/sources` in Claude Code from your installed workspace, then say **Connect Oura**. If your install predates the Oura guide, run `/1000s-update` first.
+
+You'll need your Oura login, a synced ring, an active Oura membership for Gen3 or later, and Python 3.9+ on your computer. This setup uses an Oura application you register for your own use. You create the application and approve access in your browser; Claude Code walks you through saving its credentials locally and testing the connection. Don't paste secrets into chat.
+
+**[Follow the Oura setup guide](docs/oura.md)** for the application fields, browser approval, verification, and troubleshooting. After connecting, run `/render` and open **Health** to see your recovery data. Oura is optional; you can finish the install and connect it later.
 
 ## Run it for thirty days
 
