@@ -371,9 +371,11 @@ Read ALL of the following, in this order:
 
 Only if `system/sources.md` lists Oura or Strava as connected. This refreshes `system/health/health-data.json`, the single cache the Physical recovery rules read. Read credentials from `system/health/credentials.json`. On any failure, keep the last good cache, set that source's `status` to `error`, and continue -- never block the punchlist.
 
-1. **Strava:** run `python3 system/health/strava_token.py system/health/credentials.json` to get a valid access token (it refreshes the 6-hour token and persists rotation). Then `GET https://www.strava.com/api/v3/athlete/activities?after=<30d-ago-epoch>&per_page=50` with `Authorization: Bearer <token>`. If `python3` is unavailable, do the refresh inline: `POST https://www.strava.com/oauth/token` with `client_id`, `client_secret`, `grant_type=refresh_token`, `refresh_token`, persist the new tokens, then the same GET.
-2. **Oura:** with the stored bearer token, `GET https://api.ouraring.com/v2/usercollection/daily_readiness`, `daily_sleep`, and `sleep` for the last 30 days (`start_date`/`end_date` params).
-3. **Normalize** into `system/health/health-data.json` using this shape (omit a source's block and set `connected:false` if it is not connected):
+Run source refreshes sequentially from inside `1000-second-system/` so they preserve each other's cache and credentials.
+
+1. **Strava (if connected):** run `python3 system/health/strava_token.py system/health/credentials.json` to get a valid access token (it refreshes the 6-hour token and persists rotation). Then `GET https://www.strava.com/api/v3/athlete/activities?after=<30d-ago-epoch>&per_page=50` with `Authorization: Bearer <token>`. Normalize and merge only the `strava` block into the existing cache using the shape below; update `fetched_at` on success and preserve Oura. If `python3` is unavailable, do the refresh inline: `POST https://www.strava.com/oauth/token` with `client_id`, `client_secret`, `grant_type=refresh_token`, `refresh_token`, persist the new tokens, then the same GET.
+2. **Oura (if connected):** run `python3 system/health/oura_client.py --credentials system/health/credentials.json --output system/health/health-data.json`. The stdlib helper refreshes OAuth when needed, paginates `daily_readiness`, `daily_sleep`, and `sleep`, and merges the normalized Oura block while preserving Strava. It defaults to 30 local calendar days including today. On exit 1, report its short error and continue; it retains the last good data with `oura.status: "error"`. If Python 3.9+ or the helper is missing, report that setup issue and skip Oura recovery rules. See `system/health/oura.md` for setup and the field contract.
+3. **Cache shape:** omit a disconnected source's block, or use `{ "connected": false }`. The Oura helper owns its normalization; do not overwrite it with inline normalization. Missing readings are `null`, not zero. `today` refers to the requested end date, so an unsynced day does not borrow yesterday's readings. `status: "fresh"` means a successful fetch, which may still contain null readings.
 
    ```json
    {
@@ -426,7 +428,7 @@ Only if `system/sources.md` lists Oura or Strava as connected. This refreshes `s
 
 ## Physical recovery rules (Oura + Strava)
 
-Apply these during stack-ranking (step 5) and default promotion (step 6) whenever `system/health/health-data.json` has a connected source. Thresholds are defaults; the operator can tune them in `OPERATOR.md`.
+Apply these during stack-ranking (step 5) and default promotion (step 6) whenever `system/health/health-data.json` has a connected source. Use Oura scores only when `oura.status` is `fresh` and the individual score is non-null. An error or missing score is unknown recovery, not a zero score or evidence of good recovery; do not infer readiness to train from it. Thresholds are defaults; the operator can tune them in `OPERATOR.md`.
 
 - **Recovery gate.** If Oura `readiness < 70` OR `sleep_score < 70`: demote hard-training Physical candidates (intense runs, heavy lifts, intervals) and promote mobility/recovery/walk candidates instead. Add one line to the Physical section: "Recovery amber: readiness [N]. Suggesting mobility over load tonight." If `readiness < 60`, state it plainly and prefer rest/mobility as the Physical default.
 - **Movement gap.** If Strava `days_since_workout >= 2` AND readiness is not amber/red, promote a movement or strength 1000 into the Physical slot. The longer the gap, the higher the promotion.
@@ -547,7 +549,7 @@ Edit by hand if you know what you're doing, or use `/sources` to manage interact
 ### Oura
 
 - **Pillar(s) informed:** Physical
-- **Connection method:** Oura API v2 bearer token (no MCP). Token in `system/health/credentials.json`. Data cached in `system/health/health-data.json`.
+- **Connection method:** Oura API v2 OAuth2, `daily` scope. Exact keys in `system/health/credentials.json` under `oura`: `client_id`, `client_secret`, `access_token`, `refresh_token`, `access_token_expires_at` (Unix seconds). `system/health/oura_client.py` refreshes and normalizes the data into `system/health/health-data.json`. Authoritative setup: `system/health/oura.md`.
 - **Read window:** last 30 days
 - **Last successful read:** [TIMESTAMP -- updated by the Health fetch]
 - **Notes:** feeds the engine's recovery gate (readiness, sleep score, HRV, resting HR).
@@ -1254,12 +1256,15 @@ For each file in the installer's generation spec:
 1. If the operator hasn't edited it: pull the new version, replace cleanly
 2. If the operator HAS edited it: show them the upstream diff, ask which to keep (local / upstream / merge by hand)
 
+For an existing Oura connection, also install/update `system/health/oura_client.py` and `system/health/oura.md` from the corresponding `docs/` files upstream, using the same local-edit rule. Update the Health fetch instructions in `system/punchlist-engine.md` to invoke the helper. Do not reconnect or request a token merely to update the helper; an existing bearer token can be tested later via `/sources`.
+
 **NEVER touch:**
 - `OPERATOR.md`
 - `PUNCHLIST.md` (regenerated by engine anyway)
 - `pursuits-parking-lot.md`
 - `log/*.md`
 - `system/sources.md` (managed by `/sources`)
+- `system/health/credentials.json` and `system/health/health-data.json` (private local state)
 - Anything in `.claude/commands/` that wasn't shipped by the installer
 
 After the update:
@@ -1290,12 +1295,12 @@ Allow the operator to:
 
 ## Health sources: Oura and Strava
 
-These two have no MCP, so they connect via the operator's own API credentials, stored locally in `1000-second-system/system/health/credentials.json`. That folder is inside the gitignored install directory: the credentials never leave the machine and are never committed. Create `system/health/` if it does not exist.
+These integrations use the operator's own API credentials, stored locally in `1000-second-system/system/health/credentials.json` and sent only to the corresponding provider for authentication. Create `system/health/` if it does not exist. Verify the install directory and the credentials/cache files are gitignored before writing them; use mode `0600` for credentials. Never put tokens in chat, shell history, logs, or commits.
 
 **Connect Oura:**
-1. Send the operator to `https://cloud.ouraring.com/` to create an API token (Personal Access Token if their account offers one; otherwise a Personal OAuth app with scopes `daily`, `heartrate`, `workout`, `personal`). Confirm the current method against `https://cloud.ouraring.com/docs/authentication`.
-2. Capture the token and write it to `credentials.json` under `oura.access_token` (add `client_id`/`client_secret`/`refresh_token`/`access_token_expires_at` too if their token is OAuth and refreshes).
-3. Add the Oura entry to `system/sources.md`. Run a test read.
+1. Read the authoritative Oura setup at `https://raw.githubusercontent.com/TottyBuilds/1000-second-method/main/docs/oura.md` and save it as `system/health/oura.md`. Follow its **Connect Oura** section for both install-time and later connections. It specifies one path: OAuth2 authorization-code flow with `daily` scope. Oura deprecated PATs in December 2025; do not offer PAT creation.
+2. Install `system/health/oura_client.py` from `https://raw.githubusercontent.com/TottyBuilds/1000-second-method/main/docs/oura_client.py`. Follow the guide's consent/state validation and local code exchange. Store the exact `oura` keys: `client_id`, `client_secret`, `access_token`, `refresh_token`, `access_token_expires_at` (absolute Unix seconds). Preserve existing Strava credentials.
+3. From inside `1000-second-system/`, run `python3 system/health/oura_client.py --credentials system/health/credentials.json --output system/health/health-data.json`. On success add the Oura entry to `system/sources.md`; on failure report the error and continue the install. A live token is not needed to run the guide's offline fixture check.
 
 **Connect Strava:**
 1. Send the operator to `https://www.strava.com/settings/api` to register an API application. Capture `client_id` and `client_secret`.
@@ -1303,7 +1308,7 @@ These two have no MCP, so they connect via the operator's own API credentials, s
 3. Exchange it once: `POST https://www.strava.com/oauth/token` with `client_id`, `client_secret`, `code`, `grant_type=authorization_code`. Store `refresh_token` (and `access_token`/`expires_at`) in `credentials.json` under `strava`.
 4. Fetch the refresh helper into the install: write `system/health/strava_token.py` from `https://raw.githubusercontent.com/TottyBuilds/1000-second-method/main/docs/strava_token.py`. Add the Strava entry to `system/sources.md`. Run a test read.
 
-**Test (Oura/Strava):** run the Health fetch procedure from `system/punchlist-engine.md` once and report each source's resulting `status` (fresh/error) and a one-line sample (today's readiness; days since last workout).
+**Test (Oura/Strava):** run the Health fetch procedure from `system/punchlist-engine.md` once and report each source's resulting `status` (fresh/error) and a one-line sample (today's readiness or "not yet synced" for null; days since last workout). Do not print credentials or use an error-status cache as current recovery data.
 
 **Remove (Oura/Strava):** delete that source's block from `credentials.json` and its entry from `sources.md`. Do not revoke the app on Oura/Strava's side -- tell the operator they can do that in the provider's settings.
 

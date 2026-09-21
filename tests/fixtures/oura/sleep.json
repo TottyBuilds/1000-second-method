@@ -1,0 +1,10 @@
+{
+  "data": [
+    {"id": "synthetic-s21", "day": "2026-09-21", "type": "long_sleep", "average_hrv": 48, "lowest_heart_rate": 51, "total_sleep_duration": 27000, "time_in_bed": 30600, "bedtime_start": "2026-09-20T23:00:00-07:00", "bedtime_end": "2026-09-21T07:30:00-07:00", "low_battery_alert": false, "period": 0},
+    {"id": "synthetic-s19", "day": "2026-09-19", "type": "long_sleep", "average_hrv": 31, "lowest_heart_rate": 58, "total_sleep_duration": 21600, "time_in_bed": 23400, "bedtime_start": "2026-09-18T23:30:00-07:00", "bedtime_end": "2026-09-19T06:00:00-07:00", "low_battery_alert": false, "period": 0},
+    {"id": "synthetic-s20", "day": "2026-09-20", "type": "long_sleep", "average_hrv": null, "lowest_heart_rate": null, "total_sleep_duration": 24300, "time_in_bed": 27000, "bedtime_start": "2026-09-19T23:00:00-07:00", "bedtime_end": "2026-09-20T06:30:00-07:00", "low_battery_alert": false, "period": 0},
+    {"id": "synthetic-shorter21", "day": "2026-09-21", "type": "long_sleep", "average_hrv": 99, "lowest_heart_rate": 40, "total_sleep_duration": 12000, "time_in_bed": 14400, "bedtime_start": "2026-09-21T08:00:00-07:00", "bedtime_end": "2026-09-21T12:00:00-07:00", "low_battery_alert": false, "period": 1},
+    {"id": "synthetic-nap21", "day": "2026-09-21", "type": "sleep", "average_hrv": 100, "lowest_heart_rate": 39, "total_sleep_duration": 1800, "time_in_bed": 2100, "bedtime_start": "2026-09-21T14:00:00-07:00", "bedtime_end": "2026-09-21T14:35:00-07:00", "low_battery_alert": false, "period": 2}
+  ],
+  "next_token": null
+}

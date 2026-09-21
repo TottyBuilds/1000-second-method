@@ -21,3 +21,9 @@ tmp/
 .installed-version
 .update-log.md
 .friday-staged.md
+
+# Local health credentials/cache and Python bytecode
+credentials.json
+health-data.json
+__pycache__/
+*.py[cod]

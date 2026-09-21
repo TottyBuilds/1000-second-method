@@ -1617,7 +1617,7 @@
       metrics.innerHTML = "";
       [
         { label: "Readiness", value: t.readiness, unit: "", cls: scoreClass(t.readiness), sub: "Oura" },
-        { label: "Sleep", value: t.sleep_score, unit: "", cls: scoreClass(t.sleep_score), sub: t.sleep_hours != null ? t.sleep_hours + " h in bed" : "Oura" },
+        { label: "Sleep", value: t.sleep_score, unit: "", cls: scoreClass(t.sleep_score), sub: t.sleep_hours != null ? t.sleep_hours + " h asleep" : "Oura" },
         { label: "HRV", value: t.hrv_ms, unit: "ms", cls: "", sub: "overnight avg" },
         { label: "Resting HR", value: t.resting_hr, unit: "bpm", cls: "", sub: "overnight low" }
       ].forEach(function (c) {

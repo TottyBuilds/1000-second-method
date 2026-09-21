@@ -1,0 +1,8 @@
+{
+  "data": [
+    {"id": "synthetic-r21", "day": "2026-09-21", "score": 82, "contributors": {}, "timestamp": "2026-09-21T08:00:00-07:00"},
+    {"id": "synthetic-r19", "day": "2026-09-19", "score": 68, "contributors": {}, "timestamp": "2026-09-19T08:00:00-07:00"},
+    {"id": "synthetic-r20", "day": "2026-09-20", "score": null, "contributors": {}, "timestamp": "2026-09-20T08:00:00-07:00"}
+  ],
+  "next_token": null
+}
