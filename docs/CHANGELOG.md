@@ -30,6 +30,8 @@ What stays the same:
 
 Breaking: nothing. Existing installs pick up Stash & Breach language, `log/stashes.md`, and the `breach` outcome via `/1000s-update`.
 
+Follow-up fix (2026-09-25): three version stamps in INSTALL.md (the operator README template, the `.installed-version` write, and the final version check) still said 2.5.0. They now use the Manifest Version, 2.6.0. `docs/PRINCIPLES.md` now says six protocols. No behavior change.
+
 ## v2.5.0 -- 2026-08-05
 
 The week release. The method gains its sixth protocol and the unit gets its true name.
