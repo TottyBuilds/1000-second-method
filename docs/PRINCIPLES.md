@@ -8,7 +8,7 @@ What this is and what it isn't. Read this before complaining that it doesn't do 
 You run it once. It interviews you for about 12 minutes. It connects to the data sources you already use, then writes a personalized operating system into your workspace. From then on, the system lives in your files, plus reads from your own connected sources. Not from a server I run.
 
 **A set of protocols, not a set of tools.**
-A protocol is a verb. It is what you do, repeatedly, when you're tired. The five protocols here are the smallest set that durably shifts your week.
+A protocol is a verb. It is what you do, repeatedly, when you're tired. The six protocols here are the smallest set that durably shifts your week.
 
 **A system that watches so you can focus.**
 The installer connects to your calendar, your work messaging, your meeting transcripts, your physical tracking, and your family/personal calendar. Every morning it produces a Daily Punchlist: stack-ranked 1000-second actions across Physical, Mental, and Emotional pillars. Your job collapses to picking one and running it. The watching is the work the system does for you.
